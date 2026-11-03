@@ -78,7 +78,7 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
   transition:border-color .3s var(--ease-out),color .3s var(--ease-out),background-color .3s var(--ease-out)}
 .nav a:hover,.nav a[aria-current="page"]{border-color:var(--accent);color:var(--accent)}
 .nav .btn{height:2.6rem;padding:0 1.2rem;font-size:.86rem;margin-left:.4rem}
-.nav .btn:hover{color:#0A0A0B}
+.nav .btn--pri,.nav .btn--pri:hover{color:#0A0A0B;border-color:transparent}
 .burger{display:none;width:2.9rem;height:2.9rem;border-radius:50%;border:1px solid var(--line-2);background:none;cursor:pointer;position:relative}
 .burger span{position:absolute;left:50%;width:1.1rem;height:1.5px;background:var(--fg);transform:translateX(-50%);transition:transform .35s var(--ease-out),top .35s var(--ease-out)}
 .burger span:first-child{top:42%}.burger span:last-child{top:58%}
@@ -100,7 +100,7 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
 .story__text .wrap{position:relative;height:100%}
 .beat{position:absolute;left:var(--gutter);top:50%;width:min(48rem,46vw);transform:translateY(-50%);pointer-events:auto}
 .beat h1{font-size:var(--t-hero)}
-.beat h2{font-size:var(--t-h2)}
+.beat h2{font-size:var(--t-h2);max-width:13ch}
 .beat p{margin-top:1.5rem;max-width:31rem;color:var(--muted);font-size:clamp(1rem,.95rem + .3vw,1.15rem)}
 .beat .ctas{margin-top:2.2rem}
 .js .beat:not(.beat--0){opacity:0;visibility:hidden;transform:translateY(calc(-50% + 2.5rem))}
@@ -323,7 +323,7 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
   .js .beat.out{transform:translateY(-2rem)}
   .js .beat.on{transform:none}
   .beat h1{font-size:clamp(2.35rem,calc(min(100vw - 2.5rem,90vw)*.118),3.4rem)}
-  .beat h2{font-size:clamp(1.85rem,calc(min(100vw - 2.5rem,90vw)*.1),2.8rem)}
+  .beat h2{font-size:clamp(1.85rem,calc(min(100vw - 2.5rem,90vw)*.1),2.8rem);max-width:none}
   .beat p{margin:1rem auto 0;font-size:.98rem}
   .beat .ctas{justify-content:center;margin-top:1.6rem}
   .beat__n{margin-bottom:1rem}
