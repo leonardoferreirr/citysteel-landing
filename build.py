@@ -26,7 +26,7 @@ IMG = RAIZ / "assets/img"
 
 DOMINIO = "https://www.citysteel.com.br"
 INDEXAR = False          # True só quando o domínio estiver ligado na Vercel
-WHATSAPP = ""            # [A PREENCHER] só dígitos com DDI, ex.: 5511999999999. Vazio = Direct do Instagram
+WHATSAPP = "5524998593556"  # só dígitos com DDI. Vazio = Direct do Instagram
 INSTAGRAM = "https://www.instagram.com/citysteel.oficial/"
 INSTAGRAM_DM = "https://ig.me/m/citysteel.oficial"
 ENDERECO = ("Alameda Araguaia, 2190, 10º andar", "Alphaville, Barueri, SP")

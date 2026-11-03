@@ -119,8 +119,8 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
 
 /* ---------- seções ---------- */
 .sec{position:relative;padding-block:var(--section-py)}
-.sec__head{display:grid;grid-template-columns:1.55fr 1fr;gap:clamp(2rem,6vw,6rem);align-items:end;margin-bottom:clamp(3rem,7vw,5.5rem)}
-.sec__head h2{font-size:var(--t-h2)}
+.sec__head{text-align:center;margin-bottom:clamp(3rem,6vw,5rem)}
+.sec__head h2{font-size:var(--t-h2);margin-inline:auto;text-wrap:balance}
 .sec__head p{color:var(--muted);max-width:30rem}
 
 /* cota de prancha: separador desenhado entre seções */
@@ -172,8 +172,8 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
 .rail{position:relative}
 .js .rail{height:var(--rail-h,320vh)}
 .rail__stage{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;padding-top:4.75rem;overflow:hidden}
-.rail__head{margin-bottom:clamp(2rem,4vw,3.2rem)}
-.rail__head h2{font-size:var(--t-h2);max-width:16ch}
+.rail__head{margin-bottom:clamp(2rem,4vw,3.2rem);text-align:center}
+.rail__head h2{font-size:var(--t-h2);margin-inline:auto;text-wrap:balance}
 .rail__track{display:flex;gap:clamp(1rem,2vw,1.6rem);padding-inline:var(--gutter);will-change:transform}
 .card{flex:none;width:clamp(17rem,30vw,27rem)}
 .card .ph{aspect-ratio:4/4.6;max-height:56vh}
