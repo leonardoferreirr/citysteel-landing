@@ -12,7 +12,7 @@
   --accent:#FF6A13; --accent-hi:#FFA31A;
   --grad:linear-gradient(90deg,var(--accent),var(--accent-hi));
   --font:"Poppins","Poppins Reserva",Arial,sans-serif;
-  --t-hero:clamp(2.6rem,6.5vw,6.8rem);
+  --t-hero:clamp(2.6rem,5.8vw,6.4rem);
   --t-h2:clamp(2rem,3.9vw,4rem);
   --t-h3:clamp(1.25rem,1.9vw,1.75rem);
   --t-body:clamp(.98rem,.94rem + .2vw,1.06rem);
@@ -98,7 +98,7 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
 .story__veil{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(10,10,11,.92) 0%,rgba(10,10,11,.55) 34%,rgba(10,10,11,0) 58%)}
 .story__text{position:absolute;inset:0;display:flex;align-items:center;pointer-events:none}
 .story__text .wrap{position:relative;height:100%}
-.beat{position:absolute;left:var(--gutter);top:50%;width:min(50rem,54vw);transform:translateY(-50%);pointer-events:auto}
+.beat{position:absolute;left:var(--gutter);top:50%;width:min(48rem,46vw);transform:translateY(-50%);pointer-events:auto}
 .beat h1{font-size:var(--t-hero)}
 .beat h2{font-size:var(--t-h2)}
 .beat p{margin-top:1.5rem;max-width:31rem;color:var(--muted);font-size:clamp(1rem,.95rem + .3vw,1.15rem)}
@@ -287,7 +287,7 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
 .foot__grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2rem}
 .foot__brand img{height:3rem;width:auto}
 .foot__brand p{margin-top:1.2rem;color:var(--muted);max-width:22rem;font-size:.92rem}
-.foot h4{margin:0 0 1rem;font-weight:500;font-size:.78rem;letter-spacing:.2em;color:var(--steel)}
+.foot__h{margin:0 0 1rem;font-weight:500;font-size:.78rem;letter-spacing:.2em;color:var(--steel)}
 .foot ul{margin:0;padding:0;list-style:none;display:grid;gap:.55rem;font-size:.94rem}
 .foot a{transition:color .3s}
 .foot a:hover{color:var(--accent)}

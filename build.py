@@ -50,7 +50,8 @@ def img(base, alt, sizes="(max-width:860px) 92vw, 46vw", w=1600, h=1067, lazy=Tr
             w, h = im.size
     except Exception:
         pass
-    srcset = f'/assets/img/{base}-900.webp 900w, /assets/img/{base}-1600.webp 1600w' if p900.exists() else ""
+    # o descritor do srcset usa a largura real (a fachada do cliente tem 1341 px, não 1600)
+    srcset = f'/assets/img/{base}-900.webp 900w, /assets/img/{base}-1600.webp {w}w' if p900.exists() else ""
     attrs = f'src="/assets/img/{base}-1600.webp"'
     if srcset:
         attrs += f' srcset="{srcset}" sizes="{sizes}"'
@@ -77,13 +78,13 @@ CMP = [
 # (imagem base, alt, título, texto). Fotos de banco ilustram o tipo de obra; trocar
 # pelas obras reais da City Steel quando chegarem.
 RAIL = [
-    ("casa-1", "Casa contemporânea ao entardecer, com fachada escura e luz quente", "Casas de alto padrão",
+    ("casa-entardecer-madeira", "Casa contemporânea de volumes retos com madeira, em silhueta ao entardecer", "Casas de alto padrão",
      "Projetos exclusivos, com grandes vãos, fachada contemporânea e obra limpa no seu terreno."),
-    ("loja-fachada", "Fachada de uma loja City Steel com letreiro e frente de vidro", "Lojas, escritórios e clínicas",
+    ("loja-fachada", "Fachada de uma loja City Steel com letreiro iluminado e frente de vidro", "Lojas, escritórios e clínicas",
      "O ponto comercial fica pronto antes, e o seu negócio abre as portas mais cedo."),
-    ("obra-1", "Estrutura de steel frame de uma casa em montagem", "Ampliações e segundo andar",
+    ("obra-tesouras", "Tesouras treliçadas de perfil de aço galvanizado parafusado", "Ampliações e segundo andar",
      "Estrutura leve, que pesa pouco sobre o que já existe. Ideal para subir um andar ou fazer um anexo."),
-    ("casa-2", "Casa moderna com madeira, vidro e iluminação quente", "Espaços de lazer",
+    ("casa-pedra-vidro", "Casa térrea de vidro e madeira entre paredes de pedra, acesa ao anoitecer", "Espaços de lazer",
      "Área gourmet, edícula ou casa de campo, com a mesma precisão de uma obra grande."),
 ]
 
@@ -288,13 +289,12 @@ def main():
         "COTA_1": cota("12 000"), "COTA_2": cota("8 400"), "COTA_3": cota("6 000"),
         "ENDERECO_HTML": end_html, "MAPA": MAPA, "INSTAGRAM": INSTAGRAM, "INSTAGRAM_DM": INSTAGRAM_DM,
         "WHATSAPP": WHATSAPP, "FRANQUIA_MAP": FRANQUIA_MAP, "ANO": str(date.today().year),
-        "IMG_ENG": "", "ALT_ENG": "", "IMG_EXE": "", "ALT_EXE": "",
+        "IMG_ENG": "", "IMG_EXE": "",
     }
     # imagens das soluções (src cru porque ficam dentro de <img> no template)
-    for chave, base, alt in (("ENG", "engenharia-1", "Projeto técnico de engenharia sobre a mesa"),
-                             ("EXE", "execucao-1", "Equipe montando a estrutura de aço de uma obra")):
-        blocos[f"IMG_{chave}"] = f"/assets/img/{base}-1600.webp"
-        blocos[f"ALT_{chave}"] = alt
+    for chave, base, alt in (("ENG", "engenharia-prancheta", "Mãos desenhando um projeto na prancha, com escalímetro"),
+                             ("EXE", "obra-paineis", "Painéis de parede em steel frame, com perfis de aço parafusados")):
+        blocos[f"IMG_{chave}"] = img(base, alt, sizes="(max-width:860px) 92vw, 46vw")
     jsv = hash_de(JS)
     for nome, pg in PAGINAS.items():
         robots = pg.get("robots") or ("index,follow" if INDEXAR else "noindex,nofollow")
