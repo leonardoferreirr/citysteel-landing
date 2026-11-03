@@ -18,6 +18,7 @@ export const INTRO_END = 0.25;
 const INTRO_MS = 2400;
 
 const TOKENS = {
+  bg: '#0A0A0B',
   accent: '#FF6A13',
   accentHi: '#FFA31A',
   steel: '#8C939C',
@@ -74,6 +75,11 @@ const GLYPHS = {
   '/': [[[0.4, 0], [3.6, 6]]],
   '²': [[[0.3, 4.6], [0.8, 5.2], [1.8, 5.2], [2.3, 4.6], [2.3, 4.2], [0.3, 2.8], [2.3, 2.8]]],
 };
+// acentos: a base mais o traço acima da caixa alta (agudo, til, cedilha)
+const ACUTE = [[1.6, 6.9], [2.6, 7.7]];
+for (const [acc, base] of [['Á', 'A'], ['É', 'E'], ['Í', 'I'], ['Ó', 'O'], ['Ú', 'U']]) GLYPHS[acc] = [...GLYPHS[base], ACUTE];
+GLYPHS['Ã'] = [...GLYPHS.A, [[1, 7], [1.6, 7.6], [2.4, 7], [3, 7.6]]];
+GLYPHS['Ç'] = [...GLYPHS.C, [[2.3, 0], [2.3, -0.6], [1.6, -1]]];
 const GLYPH_W = { '.': 2, ',': 2, ':': 2, ' ': 3, '²': 2.6 };
 const GAP = 1.5;
 
@@ -85,6 +91,9 @@ const SYMBOL = [
   [[816, 288], [815, 428], [1001, 496], [812, 498], [812, 545], [1047, 544], [1053, 463], [858, 395], [857, 353], [1051, 433], [1053, 390]],
 ].map((poly) => poly.map(([x, y]) => [(x - 482) / 571, (545 - y) / 571]));
 const SYMBOL_ASPECT = 364 / 571; // altura / largura
+
+// caixa do letreiro (m): usada pela cena e pelo painel opaco
+const SIGN = { y0: 5.0, y1: 7.8, z0: -0.9, z1: 0.35, w: 12 };
 
 // ---------------------------------------------------------------------------
 // shaders
@@ -156,8 +165,11 @@ void main() {
   }
   float fade = smoothstep(uDist - 10.0, uDist + 18.0, vDepth);
   a *= mix(1.0, 0.58, fade) * vAlpha;
-  // a prancha (anotacoes no plano do piso) recua quando a fachada entra
-  if (vY > -0.05 && vY < 0.01 && (vKind < 2.5 || vKind > 3.5)) a *= mix(1.0, 0.38, uSheet);
+  // a prancha (anotacoes no plano do piso) recua quando a fachada entra; os textos brancos recuam mais
+  if (vY > -0.05 && vY < 0.01) {
+    if (vKind > 3.5) a *= mix(1.0, 0.14, uSheet);
+    else if (vKind < 2.5) a *= mix(1.0, 0.32, uSheet);
+  }
   if (vKind > 1.5) col *= 1.0 + 0.2 * uGlow;
   if (vKind > 2.5 && vKind < 3.5) col = mix(col, vec3(1.0), 0.28 * uGlow);
   float aa = a * cov;
@@ -260,7 +272,7 @@ function buildScene(mobile) {
   };
 
   // --- dimensoes da loja (m). x: largura 0..12, z: profundidade 0 (frente) .. -18, y: altura
-  const W = 12, D = 18, H = 4.6, SLAB = 5.0, SIGN0 = 5.0, SIGN1 = 7.8, SZ0 = -0.9, SZ1 = 0.35;
+  const W = 12, D = 18, H = 4.6, SLAB = 5.0, SIGN0 = SIGN.y0, SIGN1 = SIGN.y1, SZ0 = SIGN.z0, SZ1 = SIGN.z1;
   const PIL = 0.6, WT = 0.15;
   const spacing = mobile ? 1.2 : 0.6;
 
@@ -280,7 +292,7 @@ function buildScene(mobile) {
     }
   }
   // moldura da prancha + carimbo
-  rect([G0 + 0.5, 0, GZ0 - 0.5], [G1 - 0.5, 0, GZ0 - 0.5], [G1 - 0.5, 0, GZ1 + 0.5], [G0 + 0.5, 0, GZ1 + 0.5], 0.01, 0.09, K.STEEL, 1, 0.9);
+  rect([G0 + 0.5, 0, GZ0 - 0.5], [G1 - 0.5, 0, GZ0 - 0.5], [G1 - 0.5, 0, GZ1 + 0.5], [G0 + 0.5, 0, GZ1 + 0.5], 0.01, 0.09, K.STEEL, 1, 0.5);
   {
     const cx0 = 6.2, cx1 = G1 - 0.5, cz0 = GZ0 - 0.5, cz1 = 4.3, cxm = 11.6, czm = 5.45;
     poly([[cx0, 0, cz0], [cx0, 0, cz1], [cx1, 0, cz1]], 0.05, 0.1, K.STEEL, 1, 0.9);
@@ -377,7 +389,7 @@ function buildScene(mobile) {
   // rotulos de ambiente + area
   text('LOJA', [6, 0, -3.3], RX, UZ, 0.5, 0.2, 0.225, K.STEEL, 1, 0.95, 'center');
   text('A = 148,20 M²', [6, 0, -4.1], RX, UZ, 0.3, 0.215, 0.235, K.STEEL, 1, 0.8, 'center');
-  text('ESCRITORIO', [7.5, 0, -15.0], RX, UZ, 0.36, 0.215, 0.235, K.STEEL, 1, 0.9, 'center');
+  text('ESCRITÓRIO', [7.5, 0, -15.0], RX, UZ, 0.36, 0.215, 0.235, K.STEEL, 1, 0.9, 'center');
   text('WC', [1.25, 0, -16.6], RX, UZ, 0.3, 0.22, 0.235, K.STEEL, 1, 0.9, 'center');
   text('PLANTA BAIXA  ESC 1:100', [0, 0, -D - 5.2], RX, UZ, 0.5, 0.225, 0.25, K.FG, 1, 0.9);
   seg([0, 0, -D - 5.5], [9.6, 0, -D - 5.5], 0.235, 0.25, K.STEEL, 1.3, 0.9);
@@ -485,17 +497,19 @@ function buildScene(mobile) {
     rect([x0 + 0.04, 0.08, FZ], [x1 - 0.04, 0.08, FZ], [x1 - 0.04, 3.9, FZ], [x0 + 0.04, 3.9, FZ], 0.7, 0.75, K.HI, 1.15);
   }
   for (const x of [5.82, 6.18]) seg([x, 1.0, FZ + 0.03], [x, 2.1, FZ + 0.03], 0.74, 0.76, K.HI, 1.5);
-  // simbolo CTS no letreiro (contornos da logo), wordmark e tagline
+  // marca centralizada DENTRO da caixa do letreiro (~69% da altura), na frente do painel opaco:
+  // simbolo CTS (contornos da logo) 6,27-7,35, CITY STEEL 5,71-6,13, STEEL FRAME 5,43-5,61
   {
-    const sw = 2.3, sh = sw * SYMBOL_ASPECT, sx = W / 2 - sw / 2, sy = 6.05;
+    const bz = SZ1 + 0.04;
+    const sh = 1.08, sw = sh / SYMBOL_ASPECT, sx = W / 2 - sw / 2, sy = 6.27;
     SYMBOL.forEach((polyN, i) => {
-      const pts = polyN.map(([u, v]) => [sx + u * sw, sy + v * sw, SZ1 + 0.01]);
+      const pts = polyN.map(([u, v]) => [sx + u * sw, sy + v * sw, bz]);
       poly(pts, 0.74 + i * 0.022, 0.78 + i * 0.022, K.HI, 1.6, 1, true);
     });
-    text('CITY STEEL', [W / 2, 5.42, SZ1 + 0.01], [1, 0, 0], [0, 1, 0], 0.46, 0.79, 0.84, K.FG, 1.3, 1, 'center');
-    text('STEEL FRAME', [W / 2, 5.1, SZ1 + 0.01], [1, 0, 0], [0, 1, 0], 0.2, 0.825, 0.855, K.FG, 1, 0.9, 'center');
-    seg([W / 2 - 2.6, 5.2, SZ1 + 0.01], [W / 2 - 1.55, 5.2, SZ1 + 0.01], 0.84, 0.855, K.HI, 1.5);
-    seg([W / 2 + 1.55, 5.2, SZ1 + 0.01], [W / 2 + 2.6, 5.2, SZ1 + 0.01], 0.84, 0.855, K.HI, 1.5);
+    text('CITY STEEL', [W / 2, 5.71, bz], [1, 0, 0], [0, 1, 0], 0.42, 0.79, 0.84, K.FG, 1.3, 1, 'center');
+    text('STEEL FRAME', [W / 2, 5.43, bz], [1, 0, 0], [0, 1, 0], 0.18, 0.825, 0.855, K.FG, 1, 0.9, 'center');
+    seg([W / 2 - 2.15, 5.52, bz], [W / 2 - 1.15, 5.52, bz], 0.84, 0.855, K.HI, 1.5);
+    seg([W / 2 + 1.15, 5.52, bz], [W / 2 + 2.15, 5.52, bz], 0.84, 0.855, K.HI, 1.5);
   }
   // niveis e cota vertical (anotacoes de fachada)
   level(W + 0.9, 0, 0, '+0.00', 0.7, 0.75);
@@ -512,15 +526,51 @@ function buildScene(mobile) {
 }
 
 // ---------------------------------------------------------------------------
-// camera: chaves (az em graus a partir da frente, el elevacao, dist, alvo, fov) interpoladas por spline
+// painel opaco do letreiro: o unico plano solido da cena. Fecha da esquerda pra direita junto
+// com o contorno da caixa (0,60-0,68) e grava profundidade, pra tapar as linhas que passam atras da marca.
+const PANEL_VERT = /* glsl */ `
+uniform float uPanel;
+void main() { vec3 p = position; p.x *= uPanel; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`;
+const PANEL_FRAG = /* glsl */ `
+precision highp float; uniform vec3 uBg;
+void main() { gl_FragColor = vec4(uBg, 1.0); }`;
+
+// ---------------------------------------------------------------------------
+// camera: chaves (az em graus a partir da frente, el elevacao, dist = forca da perspectiva, alvo)
+// interpoladas por spline. O fov e o deslocamento NAO vem daqui: sao resolvidos a cada quadro
+// pelo ajuste de enquadramento (FIT), que mede a caixa de tela do que esta desenhado.
 const CAM_KEYS = [
-  { p: 0.0, az: -5, el: 71, dist: 70, tx: 5.5, ty: 0, tz: -7.8, fov: 24 },
-  { p: 0.25, az: -14, el: 58, dist: 60, tx: 6, ty: 0.6, tz: -9, fov: 25 },
-  { p: 0.6, az: -34, el: 24, dist: 46, tx: 6, ty: 2.6, tz: -8, fov: 28 },
-  { p: 0.85, az: -3, el: 8, dist: 31, tx: 6, ty: 3.6, tz: -2.5, fov: 30 },
-  { p: 1.0, az: 19, el: 12, dist: 33, tx: 6, ty: 3.4, tz: -4, fov: 30 },
+  { p: 0.0, az: -5, el: 71, dist: 70, tx: 5.5, ty: 0, tz: -7.8 },
+  { p: 0.25, az: -14, el: 58, dist: 60, tx: 6, ty: 0.6, tz: -9 },
+  { p: 0.6, az: -34, el: 24, dist: 46, tx: 6, ty: 2.6, tz: -8 },
+  { p: 0.85, az: -3, el: 8, dist: 34, tx: 6, ty: 3.6, tz: -2.5 },
+  { p: 1.0, az: 19, el: 12, dist: 36, tx: 6, ty: 3.4, tz: -4 },
 ];
-const CAM_FIELDS = ['az', 'el', 'dist', 'tx', 'ty', 'tz', 'fov'];
+const CAM_FIELDS = ['az', 'el', 'dist', 'tx', 'ty', 'tz'];
+
+// pontos que definem a caixa de enquadramento (estrutura + cotas + rotulos; a grade da prancha fica
+// de fora de proposito). `from`: de onde o ponto cresce quando o elemento entra (t0-t1);
+// `to`: pra onde recolhe quando a prancha recua (o0-o1), pra fachada nao ficar pequena por causa da planta.
+const FIT = [
+  // prancha (bolhas de eixo, carimbo, titulo, norte): sempre, recolhem na fachada
+  { p: [-3.9, 0, 3.9], to: [0, 0, 0] }, { p: [15.9, 0, 3.9], to: [12, 0, 0] },
+  { p: [-3.9, 0, -21.9], to: [0, 0, -18] }, { p: [15.9, 0, -21.9], to: [12, 0, -18] },
+  { p: [16, 0, 6.5], to: [12, 0, 0] }, { p: [6.2, 0, 6.5], to: [6, 0, 0] },
+  { p: [0, 0, -24], to: [0, 0, -18] }, { p: [9.6, 0, -24], to: [9.6, 0, -18] }, { p: [14.8, 0, -24.6], to: [12, 0, -18] },
+  // estrutura
+  { p: [0, 5, 0], from: [0, 0, 0], t: [0.26, 0.34] }, { p: [12, 5, 0], from: [12, 0, 0], t: [0.26, 0.34] },
+  { p: [0, 5, -18], from: [0, 0, -18], t: [0.26, 0.34] }, { p: [12, 5, -18], from: [12, 0, -18], t: [0.26, 0.34] },
+  { p: [0, 7.8, 0.35], from: [0, 5, 0.35], t: [0.555, 0.6] }, { p: [12, 7.8, 0.35], from: [12, 5, 0.35], t: [0.555, 0.6] },
+  // anotacoes da fachada: niveis a direita, cotas a esquerda, cota 12.00 e titulo embaixo
+  { p: [14.9, 8.25, 0], from: [12, 7.8, 0], t: [0.76, 0.81] }, { p: [14.9, -0.1, 0], from: [12, 0, 0], t: [0.7, 0.75] },
+  { p: [-1.7, 0, 0], from: [0, 0, 0], t: [0.7, 0.76] }, { p: [-1.7, 7.8, 0], from: [0, 7.8, 0], t: [0.73, 0.79] },
+  { p: [0, -2.8, 0.2], from: [0, 0, 0.2], t: [0.8, 0.85] }, { p: [9.7, -2.8, 0.2], from: [9.7, 0, 0.2], t: [0.8, 0.85] },
+];
+const SHEET_OUT = [0.6, 0.72];
+// faixa da tela onde a estrutura tem que caber (NDC: -1..1), com 0,5% de folga pra largura da linha.
+// Desktop: 50-96% da largura, 8-92% da altura. Celular: 3-97% da largura, 48-95% da altura (metade de baixo).
+const REGION_WIDE = { x0: 0.01, x1: 0.91, y0: -0.83, y1: 0.83 };
+const REGION_TALL = { x0: -0.93, x1: 0.93, y0: -0.89, y1: 0.03 };
 function camAt(p) {
   const ks = CAM_KEYS; const out = {};
   let i = 0; while (i < ks.length - 2 && p > ks[i + 1].p) i++;
@@ -547,7 +597,7 @@ export async function mountFrame(canvas, opts = {}) {
   THREE.ColorManagement.enabled = false; // os tokens entram e saem como estao, sem conversao
 
   const renderer = new THREE.WebGLRenderer({
-    canvas, alpha: true, antialias: false, premultipliedAlpha: true, depth: false, stencil: false,
+    canvas, alpha: true, antialias: false, premultipliedAlpha: true, depth: true, stencil: false,
     powerPreference: 'high-performance', preserveDrawingBuffer: poster,
   });
   renderer.setClearColor(0x000000, 0);
@@ -585,8 +635,9 @@ export async function mountFrame(canvas, opts = {}) {
     uSteel: { value: new THREE.Color(TOKENS.steel) },
     uFg: { value: new THREE.Color(TOKENS.fg) },
   };
+  // linhas testam profundidade (so o painel do letreiro grava), nunca gravam
   const matOpts = {
-    vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide,
+    vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthTest: true, depthWrite: false, side: THREE.DoubleSide,
     blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
     blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneMinusSrcAlphaFactor,
   };
@@ -600,6 +651,15 @@ export async function mountFrame(canvas, opts = {}) {
     scene.add(halo);
   }
   scene.add(mesh);
+  // painel opaco do letreiro (opaco = three desenha antes das linhas; 2 cm atras do contorno da frente)
+  const panelGeo = new THREE.BufferGeometry();
+  const pz = SIGN.z1 - 0.02;
+  panelGeo.setAttribute('position', new THREE.Float32BufferAttribute([0, SIGN.y0, pz, SIGN.w, SIGN.y0, pz, SIGN.w, SIGN.y1, pz, 0, SIGN.y1, pz], 3));
+  panelGeo.setIndex([0, 1, 2, 0, 2, 3]);
+  const panelUniforms = { uPanel: { value: 0 }, uBg: { value: new THREE.Color(TOKENS.bg) } };
+  const panelMat = new THREE.ShaderMaterial({ vertexShader: PANEL_VERT, fragmentShader: PANEL_FRAG, uniforms: panelUniforms, depthTest: true, depthWrite: true, side: THREE.DoubleSide });
+  const panel = new THREE.Mesh(panelGeo, panelMat); panel.frustumCulled = false; panel.renderOrder = -2; panel.visible = false;
+  scene.add(panel);
 
   // --- estado
   let W = 1, Hh = 1;
@@ -609,7 +669,7 @@ export async function mountFrame(canvas, opts = {}) {
   let introStart = 0;
   let parTX = 0, parTY = 0, parX = 0, parY = 0;
   let raf = 0, dirty = true, paused = false, hidden = document.visibilityState === 'hidden', disposed = false;
-  let lastNow = 0;
+  let lastNow = 0, firstDone = false, readyResolve = null;
   const smooth = !reduced && !poster;
 
   function resize() {
@@ -621,35 +681,66 @@ export async function mountFrame(canvas, opts = {}) {
     request();
   }
 
-  function updateCamera() {
+  // posicao de um ponto de enquadramento no instante T (cresce ao entrar, recolhe quando a prancha recua)
+  const fitV = new THREE.Vector3();
+  function fitPos(f, T) {
+    let x = f.p[0], y = f.p[1], z = f.p[2];
+    if (f.from) {
+      const u = clamp01((T - f.t[0]) / (f.t[1] - f.t[0]));
+      x = f.from[0] + (x - f.from[0]) * u; y = f.from[1] + (y - f.from[1]) * u; z = f.from[2] + (z - f.from[2]) * u;
+    }
+    if (f.to) {
+      const u = clamp01((T - SHEET_OUT[0]) / (SHEET_OUT[1] - SHEET_OUT[0]));
+      x += (f.to[0] - x) * u; y += (f.to[1] - y) * u; z += (f.to[2] - z) * u;
+    }
+    return fitV.set(x, y, z);
+  }
+
+  function updateCamera(T) {
     const k = camAt(pShown);
     const aspect = W / Hh;
+    const wide = aspect >= 1.15;
     const distMul = Math.min(1.8, Math.max(1, 1.5 / aspect));
     const az = (k.az + parX * 2.4) * Math.PI / 180, el = (k.el + parY * 1.4) * Math.PI / 180;
     const d = k.dist * distMul;
     camera.position.set(k.tx + d * Math.sin(az) * Math.cos(el), k.ty + d * Math.sin(el), k.tz + d * Math.cos(az) * Math.cos(el));
     camera.up.set(0, 1, 0);
     camera.lookAt(k.tx, k.ty, k.tz);
-    camera.fov = k.fov; camera.aspect = aspect;
-    // enquadramento: tela larga -> estrutura nos 55-60% da direita; vertical -> metade de baixo
-    if (aspect >= 1.15) camera.setViewOffset(W, Hh, -0.19 * W, 0, W, Hh);
-    else camera.setViewOffset(W, Hh, 0, -0.2 * Hh, W, Hh);
+    camera.updateMatrixWorld(true);
+    camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
+    // caixa de tela do que esta desenhado (em unidades de tan(fov/2)), e fov + deslocamento que a poem na faixa
+    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (const f of FIT) {
+      const v = fitPos(f, T).applyMatrix4(camera.matrixWorldInverse);
+      const iz = -1 / Math.min(v.z, -0.5);
+      const px = v.x * iz, py = v.y * iz;
+      if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py;
+    }
+    const R = wide ? REGION_WIDE : REGION_TALL;
+    const t = Math.min(Math.tan(32 * Math.PI / 180), Math.max(Math.tan(7 * Math.PI / 180),
+      (x1 - x0) / (aspect * (R.x1 - R.x0)), (y1 - y0) / (R.y1 - R.y0)));
+    camera.fov = (2 * Math.atan(t) * 180) / Math.PI; camera.aspect = aspect;
+    const cx = (x0 + x1) / 2 / (t * aspect), cy = (y0 + y1) / 2 / t;
+    const dx = (R.x0 + R.x1) / 2 - cx, dy = (R.y0 + R.y1) / 2 - cy;
+    camera.setViewOffset(W, Hh, (-dx / 2) * W, (dy / 2) * Hh, W, Hh);
     camera.updateProjectionMatrix();
     uniforms.uDist.value = d;
   }
 
   function render() {
-    updateCamera();
     const T = Math.max(pShown, intro);
+    updateCamera(T);
     uniforms.uT.value = T;
     uniforms.uGlow.value = clamp01((pShown - 0.85) / 0.15);
-    uniforms.uSheet.value = clamp01((pShown - 0.6) / 0.2);
+    uniforms.uSheet.value = clamp01((pShown - SHEET_OUT[0]) / (SHEET_OUT[1] - SHEET_OUT[0]));
+    const pn = clamp01((T - 0.6) / 0.08);
+    panelUniforms.uPanel.value = pn; panel.visible = pn > 0;
     renderer.render(scene, camera);
   }
 
   function request() {
     dirty = true;
-    if (!raf && !paused && !hidden && !disposed) raf = requestAnimationFrame(tick);
+    if (!raf && (!paused || !firstDone) && !hidden && !disposed) raf = requestAnimationFrame(tick);
   }
 
   function tick(now) {
@@ -663,7 +754,7 @@ export async function mountFrame(canvas, opts = {}) {
       intro = INTRO_END * easeOutCubic(u);
       if (u >= 1) introActive = false; else moving = true;
     }
-    if (smooth) {
+    if (smooth && firstDone) {
       const k = 1 - Math.pow(0.84, dt / 16.7);
       const dP = pTarget - pShown;
       if (Math.abs(dP) > 1.5e-4) { pShown += dP * k; moving = true; } else pShown = pTarget;
@@ -673,6 +764,11 @@ export async function mountFrame(canvas, opts = {}) {
     } else { pShown = pTarget; }
     render();
     dirty = false;
+    if (!firstDone) {
+      // 1º quadro na tela: `ready` resolve no quadro seguinte, pra troca do poster nao piscar
+      firstDone = true;
+      requestAnimationFrame(() => { readyResolve && readyResolve(); if (paused) { if (raf) cancelAnimationFrame(raf); raf = 0; } });
+    }
     if (moving) raf = requestAnimationFrame(tick);
     else lastNow = 0;
   }
@@ -701,12 +797,10 @@ export async function mountFrame(canvas, opts = {}) {
   ro.observe(canvas);
   resize();
 
-  // primeiro quadro: desenha ja, e resolve `ready` depois dele estar na tela
-  const ready = new Promise((res) => {
-    resize();
-    render(); dirty = false;
-    requestAnimationFrame(() => requestAnimationFrame(() => { res(); if (introActive) request(); }));
-  });
+  // primeiro quadro no proximo rAF (assim um setProgress chamado logo apos o mount ja entra nele,
+  // sem a estrutura "crescer" de 0,25 ate o valor pedido); `ready` resolve um quadro depois.
+  const ready = new Promise((res) => { readyResolve = res; });
+  request();
 
   if (opts.debug) window.__frameDebug = { renderer, scene, camera, uniforms, material, geo, render, THREE };
 
@@ -715,7 +809,11 @@ export async function mountFrame(canvas, opts = {}) {
     /** p = progresso 0..1 da secao fixada (ver PHASES) */
     setProgress(p) {
       pTarget = clamp01(+p || 0);
-      if (!smooth) { pShown = pTarget; }
+      if (!smooth || !firstDone) {
+        pShown = pTarget;
+        // antes do 1º quadro, um p alem da intro dispensa a intro (ex.: /franquia em 0,45)
+        if (!firstDone && pTarget >= INTRO_END) { introActive = false; intro = INTRO_END; }
+      }
       request();
     },
     pause() { paused = true; if (raf) cancelAnimationFrame(raf); raf = 0; },
@@ -729,6 +827,7 @@ export async function mountFrame(canvas, opts = {}) {
       document.removeEventListener('visibilitychange', onVis);
       io.disconnect(); ro.disconnect();
       geo.dispose(); material.dispose(); if (halo) halo.material.dispose();
+      panelGeo.dispose(); panelMat.dispose();
       renderer.dispose(); renderer.forceContextLoss();
     },
   };
