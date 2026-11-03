@@ -34,6 +34,14 @@ MAPA = "https://www.google.com/maps/search/?api=1&query=Alameda+Araguaia+2190+Al
 GEO = (-23.5013991, -46.8408001)   # Alameda Araguaia, 2190 (Google Maps); o mapa usa o mesmo ponto
 # trecho do scroll do 3D usado no topo da /franquia (da estrutura à empresa pronta)
 FRANQUIA_MAP = "0.45,1"
+# Endereço da Vercel. Com INDEXAR = True, ele ganha redirect permanente para o DOMINIO no vercel.json.
+VERCEL = "citysteel.vercel.app"
+# Imagem de compartilhamento: enquanto o domínio não responde, ela sai do endereço da Vercel, senão a
+# prévia do link no WhatsApp fica sem foto. Com INDEXAR = True, tudo sai do DOMINIO.
+OG_BASE = DOMINIO if INDEXAR else f"https://{VERCEL}"
+# robôs de IA que ficam fora enquanto INDEXAR = False (o Google lê para enxergar o noindex)
+ROBOS_IA = ["GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot", "Claude-User",
+            "PerplexityBot", "Perplexity-User", "Google-Extended", "Applebot-Extended", "CCBot", "meta-externalagent"]
 
 ARROW = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg>'
 
@@ -226,18 +234,152 @@ def mira():
 </svg>'''
 
 
-def schema(pagina):
-    org = {
-        "@context": "https://schema.org", "@type": "GeneralContractor",
-        "name": "City Steel", "alternateName": "City Steel Steel Frame",
-        "description": "Construção em steel frame do projeto à entrega, com engenharia que acompanha toda a obra e equipe de execução em todas as etapas. Franquia City Steel.",
-        "url": DOMINIO + "/", "logo": DOMINIO + "/assets/img/logo-full.svg", "image": DOMINIO + "/assets/img/og-image.jpg",
-        "address": {"@type": "PostalAddress", "streetAddress": ENDERECO[0], "addressLocality": "Barueri",
-                    "addressRegion": "SP", "addressCountry": "BR"},
-        "geo": {"@type": "GeoCoordinates", "latitude": GEO[0], "longitude": GEO[1]},
-        "sameAs": [INSTAGRAM],
-    }
-    return f'<script type="application/ld+json">{json.dumps(org, ensure_ascii=False, separators=(",", ":"))}</script>'
+def texto(frag):
+    from html import unescape
+    return re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", "", frag))).strip()
+
+
+def fone():
+    """WHATSAPP (5524998593556) no formato +55 24 99859-3556."""
+    w = WHATSAPP
+    return f"+{w[:2]} {w[2:4]} {w[4:-4]}-{w[-4:]}" if len(w) >= 12 else ""
+
+
+def solucoes():
+    """Engenharia e execução, lidas do _src/index.html: (título, texto, itens)."""
+    src = (SRC / "index.html").read_text()
+    return [(texto(h), texto(p), [texto(re.sub(r"<b>.*?</b>", "", li)) for li in re.findall(r"<li>(.*?)</li>", ul)])
+            for h, p, ul in re.findall(r'<article class="sol[^"]*">.*?<h3>(.*?)</h3>\s*<p>(.*?)</p>\s*<ul class="sol__list">(.*?)</ul>',
+                                       src, flags=re.S)]
+
+
+def schema(nome, pg):
+    """Grafo JSON-LD: a marca (Organization, com a franquia), a sede que constrói (GeneralContractor),
+    o site e a página. Sem FAQPage: o site não mostra perguntas e respostas."""
+    S, url = DOMINIO, DOMINIO + pg["path"]
+    org, sede = {"@id": f"{S}/#organizacao"}, {"@id": f"{S}/#sede"}
+    bairro, cidade = ENDERECO[1].split(",")[0].strip(), "Barueri"
+    endereco = {"@type": "PostalAddress", "streetAddress": f"{ENDERECO[0]}, {bairro}", "addressLocality": cidade,
+                "addressRegion": "SP", "addressCountry": "BR"}
+    oferta = lambda nome_, desc, tipo, quem: {"@type": "Offer", "itemOffered": {
+        "@type": "Service", "name": nome_, "description": desc, "serviceType": tipo, "provider": quem}}
+    franquia = []
+    for m in MODELOS:
+        o = oferta(f"Franquia City Steel, modelo {m['nome'].lower()}", m["texto"], "Franquia de construção em steel frame", org)
+        o.update({"name": f"Investimento na franquia City Steel, modelo {m['nome'].lower()}",
+                  "price": re.sub(r"\D", "", m["preco"]), "priceCurrency": "BRL", "url": f"{S}/franquia#modelos",
+                  "category": "Franquia", "seller": org})
+        franquia.append(o)
+    obras = [oferta(t, p, "Construção em steel frame", sede) for _, _, t, p in RAIL]
+    servicos = [oferta(h.rstrip("."), f"{p} Inclui: {'; '.join(i).lower()}.", "Construção em steel frame", sede) for h, p, i in solucoes()]
+    marca = {"@type": "Organization", **org, "name": "City Steel", "alternateName": "City Steel Steel Frame",
+             "description": "Construção em steel frame do projeto à entrega e franquia de construção em steel frame, "
+                            "com sede em Alphaville, Barueri (SP).",
+             "url": f"{S}/", "logo": {"@type": "ImageObject", "url": f"{S}/assets/img/logo-full.svg"},
+             "image": f"{S}/assets/img/og-image.jpg", "address": endereco, "sameAs": [INSTAGRAM],
+             "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Franquia City Steel", "itemListElement": franquia}}
+    obra = {"@type": "GeneralContractor", **sede, "name": "City Steel", "parentOrganization": org,
+            "description": "Construção em steel frame do projeto à entrega: engenharia que projeta e acompanha toda a obra "
+                           "e equipe de execução em todas as etapas.",
+            "url": f"{S}/", "image": f"{S}/assets/img/og-image.jpg", "logo": f"{S}/assets/img/logo-full.svg",
+            "address": endereco, "geo": {"@type": "GeoCoordinates", "latitude": GEO[0], "longitude": GEO[1]},
+            "hasMap": MAPA, "sameAs": [INSTAGRAM], "knowsAbout": ["Steel frame", "Construção a seco", "Estrutura em aço"],
+            "hasOfferCatalog": {"@type": "OfferCatalog", "name": "Construção em steel frame",
+                                "itemListElement": servicos + obras}}
+    if WHATSAPP:
+        obra["telephone"] = fone()
+        marca["contactPoint"] = {"@type": "ContactPoint", "telephone": fone(), "contactType": "sales",
+                                 "availableLanguage": "pt-BR"}
+    pagina = {"@type": "WebPage", "@id": f"{url}#pagina", "url": url, "name": pg["title"], "description": pg["desc"],
+              "isPartOf": {"@id": f"{S}/#site"}, "about": org if nome == "franquia" else sede, "inLanguage": "pt-BR",
+              "primaryImageOfPage": {"@type": "ImageObject", "url": f"{S}/assets/img/og-image.jpg", "width": 1200, "height": 630}}
+    grafo = [marca, obra, {"@type": "WebSite", "@id": f"{S}/#site", "url": f"{S}/", "name": "City Steel",
+                           "inLanguage": "pt-BR", "publisher": org}, pagina]
+    if pg["path"] != "/":
+        pagina["breadcrumb"] = {"@id": f"{url}#trilha"}
+        grafo.append({"@type": "BreadcrumbList", "@id": f"{url}#trilha", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Início", "item": f"{S}/"},
+            {"@type": "ListItem", "position": 2, "name": pg["trilha"], "item": url}]})
+    js = json.dumps({"@context": "https://schema.org", "@graph": grafo}, ensure_ascii=False, separators=(",", ":"))
+    return '<script type="application/ld+json">' + js.replace("</", "<\\/") + "</script>"
+
+
+def llms():
+    """Fatos do site para assistentes de IA, nas mesmas palavras das páginas."""
+    S = DOMINIO
+    idx, fra = (SRC / "index.html").read_text(), (SRC / "franquia.html").read_text()
+    abre = lambda h: texto(re.search(r'<div class="beat beat--0"[^>]*>.*?<p>(.*?)</p>', h, flags=re.S).group(1))
+    por_que = texto(re.search(r'Por que abrir uma.*?<p[^>]*>(.*?)</p>', fra, flags=re.S).group(1))
+    lin = ["# City Steel", "",
+           f"> {abre(idx)} Sede em {ENDERECO[0]}, {ENDERECO[1]}. A City Steel também é uma franquia: "
+           + " ou ".join(f"{m['nome'].lower()} ({m['preco']})" for m in MODELOS) + ".", "",
+           "## Em poucas palavras", "",
+           "- Empresa: City Steel (no logo, City Steel Steel Frame).",
+           "- O que faz: construção em steel frame do projeto à entrega, com engenharia que projeta e acompanha "
+           "toda a obra e equipe de execução em todas as etapas.",
+           "- Tipos de obra: " + "; ".join(t.lower() for _, _, t, _ in RAIL) + ".",
+           f"- Sede: {ENDERECO[0]}, {ENDERECO[1]}.",
+           "- Unidades: a sede fica em Alphaville, Barueri, e a rede de unidades está começando agora.",
+           "- Franquia: " + "; ".join(f"{m['nome'].lower()}, investimento de {m['preco']}" for m in MODELOS) + ".",
+           "- Preço de obra: não é publicado no site.",
+           f"- Contato: WhatsApp {fone()}, Instagram @citysteel.oficial." if WHATSAPP else "- Contato: Instagram @citysteel.oficial.",
+           "", "## Construção em steel frame", ""]
+    for h, p, itens in solucoes():
+        lin += [f"### {h.rstrip('.')}", "", p, ""] + [f"- {i}" for i in itens] + [""]
+    lin += ["### Steel frame comparado à alvenaria", ""]
+    lin += [f"- **{k}:** alvenaria: {a} Steel frame City Steel: {b}" for k, a, b in CMP]
+    lin += ["", "### Tipos de obra", ""] + [f"- **{t}:** {p}" for _, _, t, p in RAIL]
+    lin += ["", "## Franquia City Steel", "", abre(fra), "", "### Modelos", ""]
+    for m in MODELOS:
+        lin += [f"- **{m['nome']}, investimento de {m['preco']}:** {m['texto']} Pontos do modelo: " + "; ".join(i.lower() for i in m["itens"]) + "."]
+    lin += ["", "### Por que abrir uma City Steel", "", por_que, ""] + [f"- **{t}:** {p}" for t, p in PILARES]
+    lin += ["", "### Como virar franqueado", ""] + [f"{i}. **{t}.** {p}" for i, (t, p) in enumerate(PASSOS, 1)]
+    lin += ["", "## Páginas", "",
+            f"- [Início]({S}/): steel frame comparado à alvenaria, engenharia e execução, tipos de obra, sede e contato.",
+            f"- [Franquia]({S}/franquia): modelos, investimento e como virar franqueado.",
+            "", "## Contato", ""]
+    if WHATSAPP:
+        lin += [f"- WhatsApp: {fone()} (https://wa.me/{WHATSAPP})"]
+    lin += [f"- Construir com a City Steel: {S}/#contato", f"- Ser franqueado: {S}/franquia#form",
+            f"- Instagram: {INSTAGRAM}", f"- Sede: {ENDERECO[0]}, {ENDERECO[1]} ({MAPA})", ""]
+    return "\n".join(lin)
+
+
+def robots_txt():
+    if INDEXAR:
+        corpo = ("# Buscadores e assistentes de IA podem ler o site inteiro.\n"
+                 "# A /obrigado fica fora do índice pelo noindex dela, não por aqui.\n"
+                 "User-agent: *\nAllow: /\n\n")
+    else:
+        # Disallow geral esconderia o noindex do Google, e a página podia aparecer sem descrição
+        corpo = ("# Pré-lançamento (INDEXAR = False): o Google lê as páginas para ver o noindex delas,\n"
+                 "# e os robôs de IA ficam fora até o domínio entrar no ar.\n"
+                 "User-agent: *\nAllow: /\n\n" + "".join(f"User-agent: {b}\nDisallow: /\n\n" for b in ROBOS_IA))
+    return corpo + f"Sitemap: {DOMINIO}/sitemap.xml\n"
+
+
+def vercel_json():
+    """Com INDEXAR = True: redirect permanente do .vercel.app para o DOMINIO (308, que o Google trata como 301).
+    Com INDEXAR = False: cabeçalho X-Robots-Tag noindex em tudo (vale também para llms.txt e imagens)."""
+    arq = RAIZ / "vercel.json"
+    atual = arq.read_text()
+    cfg = json.loads(atual)
+    redir = [r for r in cfg.get("redirects", []) if not any(h.get("value") == VERCEL for h in r.get("has", []))]
+    if INDEXAR and VERCEL not in DOMINIO:
+        host = [{"type": "host", "value": VERCEL}]
+        # a raiz vai à parte: na Vercel o "/:path*" não pega a página inicial
+        redir += [{"source": "/", "has": host, "destination": f"{DOMINIO}/", "permanent": True},
+                  {"source": "/:path*", "has": host, "destination": f"{DOMINIO}/:path*", "permanent": True}]
+    if redir:
+        cfg["redirects"] = redir
+    else:
+        cfg.pop("redirects", None)
+    cab = [h for h in cfg.get("headers", []) if not any(x["key"] == "X-Robots-Tag" for x in h["headers"])]
+    if not INDEXAR:
+        cab.append({"source": "/(.*)", "headers": [{"key": "X-Robots-Tag", "value": "noindex"}]})
+    cfg["headers"] = cab
+    if cfg != json.loads(atual):
+        arq.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n")
 
 
 # ---------------------------------------------------------------- montagem
@@ -267,15 +409,15 @@ def carimbar_f3d():
 PAGINAS = {
     "index": dict(
         arquivo="index.html", path="/",
-        title="City Steel | Construção em steel frame, do projeto à entrega",
-        desc="Construção em steel frame em Alphaville, Barueri e região: engenharia que projeta e acompanha toda a obra e equipe de execução em todas as etapas. Seja também um franqueado City Steel.",
+        title="Construção em steel frame em Alphaville e Barueri | City Steel",
+        desc="Construção em steel frame em Alphaville, Barueri (SP): engenharia que projeta e acompanha toda a obra e equipe de execução, do projeto à entrega.",
         preload='<link rel="preload" as="image" href="/assets/img/hero-frame-poster.webp" media="(min-width:861px)" fetchpriority="high">\n'
                 '<link rel="preload" as="image" href="/assets/img/hero-frame-poster-m.webp" media="(max-width:860px)" fetchpriority="high">',
         nav_franquia="", cta=("Fale com a gente", "/#contato")),
     "franquia": dict(
         arquivo="franquia.html", path="/franquia",
-        title="Franquia City Steel | Empreenda no steel frame",
-        desc="Abra uma unidade City Steel: modelo loja ou escritório (investimento de R$ 120.000) ou home office (R$ 9.900), com a engenharia e a execução da marca por trás.",
+        title="Franquia de steel frame a partir de R$ 9.900 | City Steel", trilha="Franquia",
+        desc="Franquia de construção em steel frame: loja ou escritório (R$ 120.000) ou home office (R$ 9.900), com a engenharia e a execução da City Steel por trás.",
         preload='<link rel="preload" as="image" href="/assets/img/franquia-poster.webp" media="(min-width:861px)" fetchpriority="high">\n'
                 '<link rel="preload" as="image" href="/assets/img/franquia-poster-m.webp" media="(max-width:860px)" fetchpriority="high">',
         nav_franquia=' aria-current="page"', cta=("Quero ser franqueado", "#form")),
@@ -304,11 +446,13 @@ def main():
                              ("EXE", "obra-paineis", "Painéis de parede em steel frame, com perfis de aço parafusados")):
         blocos[f"IMG_{chave}"] = img(base, alt, sizes="(max-width:860px) 92vw, 46vw")
     jsv = hash_de(JS)
+    mudou = set()
     for nome, pg in PAGINAS.items():
-        robots = pg.get("robots") or ("index,follow" if INDEXAR else "noindex,nofollow")
+        robots = pg.get("robots") or ("index,follow,max-image-preview:large" if INDEXAR else "noindex,nofollow")
         head = (head_t.replace("{{CSS}}", css).replace("{{TITLE}}", pg["title"]).replace("{{DESC}}", pg["desc"])
                 .replace("{{URL}}", DOMINIO + pg["path"]).replace("{{DOMINIO}}", DOMINIO).replace("{{ROBOTS}}", robots)
-                .replace("{{PRELOAD}}", pg["preload"]).replace("{{SCHEMA}}", schema(nome) if nome != "obrigado" else ""))
+                .replace("{{OG_BASE}}", OG_BASE)
+                .replace("{{PRELOAD}}", pg["preload"]).replace("{{SCHEMA}}", schema(nome, pg) if nome != "obrigado" else ""))
         top = (top_t.replace("{{NAV_FRANQUIA}}", pg["nav_franquia"])
                .replace("{{TOP_CTA}}", pg["cta"][0]).replace("{{TOP_CTA_HREF}}", pg["cta"][1]))
         foot = foot_t.replace("{{JSV}}", jsv).replace("{{MARQUEE}}", marquee())
@@ -319,27 +463,22 @@ def main():
         sobra = re.findall(r"\{\{[A-Z_0-9]+\}\}", html)
         if sobra:
             print(f"  ! {nome}: marcadores sem valor {sorted(set(sobra))}")
-        (RAIZ / pg["arquivo"]).write_text(html)
+        destino = RAIZ / pg["arquivo"]
+        if not destino.exists() or destino.read_text() != html:
+            mudou.add(pg["path"])
+            destino.write_text(html)
         print(f"  {pg['arquivo']}: {len(html.encode())/1024:.1f} KB")
 
-    # buscadores e assistentes de IA
-    (RAIZ / "robots.txt").write_text(
-        "User-agent: *\n" + ("Allow: /\n" if INDEXAR else "Disallow: /\n") + f"\nSitemap: {DOMINIO}/sitemap.xml\n")
+    # buscadores e assistentes de IA: tudo sai do DOMINIO
+    (RAIZ / "robots.txt").write_text(robots_txt())
+    mapa = RAIZ / "sitemap.xml"
+    antes = dict(re.findall(r"<loc>https?://[^/<]+(/[^<]*)</loc><lastmod>([\d-]+)</lastmod>", mapa.read_text())) if mapa.exists() else {}
     hoje = date.today().isoformat()
-    urls = "".join(f"<url><loc>{DOMINIO}{p}</loc><lastmod>{hoje}</lastmod></url>" for p in ("/", "/franquia"))
-    (RAIZ / "sitemap.xml").write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
-    (RAIZ / "llms.txt").write_text(f"""# City Steel
-
-> Construção em steel frame do projeto à entrega, com sede em Alphaville, Barueri (SP). Engenharia que projeta e acompanha toda a obra e equipe de execução em todas as etapas. A City Steel também é uma franquia.
-
-## Páginas
-- [Início]({DOMINIO}/): steel frame comparado à alvenaria, soluções de engenharia e execução, tipos de obra, sede e contato.
-- [Franquia]({DOMINIO}/franquia): modelos loja ou escritório (investimento de R$ 120.000) e home office (R$ 9.900), e como virar franqueado.
-
-## Sede
-{ENDERECO[0]}, {ENDERECO[1]}
-Instagram: {INSTAGRAM}
-""")
+    urls = "".join(f"  <url><loc>{DOMINIO}{p}</loc><lastmod>{hoje if p in mudou or p not in antes else antes[p]}</lastmod></url>\n"
+                   for p in ("/", "/franquia"))
+    mapa.write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
+    (RAIZ / "llms.txt").write_text(llms())
+    vercel_json()
     print(f"  site.js v={jsv}  frame3d.js v={hash_de(F3D)}  indexar={INDEXAR}  whatsapp={'sim' if WHATSAPP else 'NÃO (vai para o Direct)'}")
 
 
