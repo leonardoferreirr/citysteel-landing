@@ -210,6 +210,24 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
 .mira .sweep{transform-origin:300px 300px;animation:sweep 9s linear infinite;animation-play-state:paused}
 .mira.in .sweep{animation-play-state:running}
 @keyframes sweep{to{transform:rotate(360deg)}}
+/* ruas de Alphaville (OpenStreetMap) desenhadas como prancha */
+.uni__map{width:100%;max-width:34rem;margin-left:auto}
+.uni__map .mira{max-width:none}
+.mira .mp{fill:none;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+.mira .mp-min{stroke:var(--steel);stroke-width:.7;opacity:.3}
+.mira .mp-maj{stroke:var(--steel);stroke-width:1.1;opacity:.8}
+.mira .mp-rod{stroke:var(--fg);stroke-width:1.9;opacity:.55}
+.mira .mp-agua{stroke:var(--steel);stroke-width:.8;opacity:.45;stroke-dasharray:3 4}
+.mira .mp-sede{stroke:url(#gr);stroke-width:2.4}
+.mira .m-rua{font-size:9px;letter-spacing:.22em;fill:var(--muted)}
+.js .mira .mp-maj,.js .mira .mp-rod,.js .mira .mp-sede{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.6s var(--ease-inout)}
+.js .mira .mp-sede{transition-duration:1.4s;transition-delay:1.6s}
+.js .mira .mp-rod{transition-delay:.3s}
+.js .mira .mp-min,.js .mira .mp-agua,.js .mira .m-rua{opacity:0;transition:opacity 1.6s var(--ease-out) .6s}
+.mira.in .mp-maj,.mira.in .mp-rod,.mira.in .mp-sede{stroke-dashoffset:0}
+.js .mira.in .mp-min{opacity:.3}.js .mira.in .mp-agua{opacity:.45}.js .mira.in .m-rua{opacity:1}
+.mira__cred{margin-top:.7rem;font-size:.72rem;color:var(--steel);text-align:right}
+.mira__cred a{text-decoration:underline;text-underline-offset:2px}
 
 /* ---------- franquia (bloco da home e página) ---------- */
 .models{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1rem,2.4vw,2rem)}
@@ -352,7 +370,8 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
   .card{width:78vw;scroll-snap-align:center;text-align:center}
   .card p{margin-inline:auto}
 
-  .mira{max-width:22rem;margin:2rem auto 0}
+  .uni__map{max-width:24rem;margin:2rem auto 0}
+  .mira__cred{text-align:center}
   .uni__card{margin-inline:auto;text-align:center}
 
   .models{grid-template-columns:1fr}

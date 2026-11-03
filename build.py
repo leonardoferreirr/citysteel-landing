@@ -31,7 +31,7 @@ INSTAGRAM = "https://www.instagram.com/citysteel.oficial/"
 INSTAGRAM_DM = "https://ig.me/m/citysteel.oficial"
 ENDERECO = ("Alameda Araguaia, 2190, 10º andar", "Alphaville, Barueri, SP")
 MAPA = "https://www.google.com/maps/search/?api=1&query=Alameda+Araguaia+2190+Alphaville+Barueri+SP"
-GEO = (-23.4988791, -46.8502101)   # OpenStreetMap
+GEO = (-23.5013991, -46.8408001)   # Alameda Araguaia, 2190 (Google Maps); o mapa usa o mesmo ponto
 # trecho do scroll do 3D usado no topo da /franquia (da estrutura à empresa pronta)
 FRANQUIA_MAP = "0.45,1"
 
@@ -194,27 +194,35 @@ def dms(v, pos, neg):
 
 
 def mira():
-    """Prancha de localização da sede: régua, anéis, varredura e coordenadas reais."""
+    """Prancha da sede: ruas reais de Alphaville (OpenStreetMap) em linha fina,
+    régua, varredura e coordenadas. A sede fica no centro (300,300)."""
+    import sys
+    sys.path.insert(0, str(RAIZ / "tools"))
+    from mapa_osm import mapa
     t = []
     for k in range(20, 581, 20):
         L = 14 if k % 100 == 0 else 6
         t += [f"M{k} 20v{L}", f"M{k} 580v-{L}", f"M20 {k}h{L}", f"M580 {k}h-{L}"]
     ticks = " ".join(t)
     lat, lon = dms(GEO[0], "N", "S"), dms(GEO[1], "L", "O")
-    return f'''<svg viewBox="0 0 600 600" role="img" aria-label="Localização da sede da City Steel em Alphaville, Barueri">
+    return f'''<svg viewBox="0 0 600 600" role="img" aria-label="Mapa de Alphaville com a sede da City Steel na Alameda Araguaia">
 <defs><linearGradient id="gr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF6A13"/><stop offset="1" stop-color="#FFA31A"/></linearGradient>
-<radialGradient id="wedge" cx="300" cy="300" r="262" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF6A13" stop-opacity=".22"/><stop offset="1" stop-color="#FF6A13" stop-opacity="0"/></radialGradient></defs>
+<radialGradient id="wedge" cx="300" cy="300" r="262" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FF6A13" stop-opacity=".2"/><stop offset="1" stop-color="#FF6A13" stop-opacity="0"/></radialGradient>
+<radialGradient id="vinheta" cx="300" cy="300" r="300" gradientUnits="userSpaceOnUse"><stop offset=".55" stop-color="#0A0A0B" stop-opacity="0"/><stop offset="1" stop-color="#0A0A0B" stop-opacity=".85"/></radialGradient>
+<clipPath id="quadro"><rect x="20" y="20" width="560" height="560"/></clipPath></defs>
+{mapa()}
+<rect x="20" y="20" width="560" height="560" fill="url(#vinheta)"/>
 <rect class="m-line" x="20" y="20" width="560" height="560"/>
 <path class="m-line" d="{ticks}"/>
-<path class="m-line" d="M20 300H580M300 20V580" stroke-dasharray="4 6"/>
-<circle class="m-ring" cx="300" cy="300" r="70"/><circle class="m-ring" cx="300" cy="300" r="140"/><circle class="m-ring" cx="300" cy="300" r="210"/>
+<path class="m-line m-cross" d="M20 300H580M300 20V580" stroke-dasharray="4 6"/>
+<circle class="m-ring" cx="300" cy="300" r="120"/>
 <circle class="m-ring" cx="300" cy="300" r="262" stroke-dasharray="2 8"/>
 <g class="sweep"><path d="M300 300L300 38A262 262 0 0 1 431 73Z" fill="url(#wedge)"/><path class="m-acc" d="M300 300V38"/></g>
 <circle class="m-acc pulse" cx="300" cy="300" r="60"/><circle class="m-acc pulse" cx="300" cy="300" r="60"/>
 <rect x="293" y="293" width="14" height="14" fill="#FF6A13" transform="rotate(45 300 300)"/>
-<text class="m-txt" x="40" y="58">{lat}</text><text class="m-txt" x="40" y="78">{lon}</text>
+<g class="m-tag"><rect x="40" y="36" width="150" height="54" fill="#0A0A0B" fill-opacity=".8"/><text class="m-txt" x="48" y="58">{lat}</text><text class="m-txt" x="48" y="78">{lon}</text></g>
 <text class="m-txt" x="560" y="58" text-anchor="end">N ↑</text>
-<text class="m-big" x="40" y="548">Alphaville, Barueri</text><text class="m-txt" x="40" y="566">SEDE CITY STEEL</text>
+<g class="m-tag"><rect x="34" y="520" width="232" height="56" fill="#0A0A0B" fill-opacity=".8"/><text class="m-big" x="40" y="548">Alphaville, Barueri</text><text class="m-txt" x="40" y="566">SEDE CITY STEEL</text></g>
 </svg>'''
 
 
