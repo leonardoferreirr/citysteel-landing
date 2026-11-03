@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+{{HEAD}}
+</head>
+<body>
+{{TOP}}
+<main>
+
+  <!-- história em 3D: da planta à empresa -->
+  <section class="story" id="inicio" data-map="0,1" aria-label="Da planta à obra pronta">
+    <div class="story__stage">
+      <picture class="story__poster">
+        <source media="(max-width:860px)" srcset="/assets/img/hero-frame-poster-m.webp" width="900" height="1200">
+        <img src="/assets/img/hero-frame-poster.webp" alt="" width="1600" height="900" fetchpriority="high" decoding="async">
+      </picture>
+      <canvas class="story__canvas" aria-hidden="true"></canvas>
+      <div class="story__veil"></div>
+      <div class="story__text">
+        <div class="wrap">
+          <div class="beat beat--0" data-a="0" data-b=".2">
+            <h1>A construção <span class="grad">evoluiu.</span></h1>
+            <p>A City Steel projeta e constrói em steel frame: engenharia que acompanha cada etapa e uma equipe de execução do início ao fim da obra.</p>
+            <div class="ctas">
+              <a class="btn btn--pri" href="#contato">Quero construir {{ARROW}}</a>
+              <a class="btn btn--line" href="/franquia">Seja franqueado</a>
+            </div>
+          </div>
+          <div class="beat" data-a=".2" data-b=".45">
+            <h2>Tudo começa <span class="grad">no projeto.</span></h2>
+            <p>Antes do primeiro perfil chegar ao terreno, a engenharia já desenhou a obra inteira. Você sabe o que vai ser feito, em que ordem e com qual orçamento.</p>
+          </div>
+          <div class="beat" data-a=".45" data-b=".7">
+            <h2>A estrutura <span class="grad">sobe em aço.</span></h2>
+            <p>Perfis cortados na medida e montados a seco, no prumo e no esquadro. Sem tijolo, sem massa e sem esperar secar.</p>
+          </div>
+          <div class="beat" data-a=".7" data-b="1.01">
+            <h2>E vira <span class="grad">o seu negócio.</span></h2>
+            <p>Casa, loja, escritório ou clínica. E se a ideia for empreender, a próxima unidade City Steel pode ser a sua.</p>
+            <div class="ctas">
+              <a class="btn btn--pri" href="/franquia">Conheça a franquia {{ARROW}}</a>
+              <a class="btn btn--line" href="#contato">Fale com a gente</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="story__hint" aria-hidden="true"><i></i>Role para construir</div>
+      <div class="story__rail" aria-hidden="true"><span class="story__label">PROJETO</span><span class="story__bar"><i></i></span></div>
+    </div>
+  </section>
+
+  <!-- por que aço -->
+  <section class="sec" id="aco">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="rv">Por que construir <span class="ac">em aço.</span></h2>
+        <p class="rv" data-d="1">O steel frame troca o tijolo por uma estrutura leve de aço galvanizado, fechada com placas. A diferença aparece no prazo, no canteiro e na tranquilidade de quem constrói.</p>
+      </div>
+      <div class="cmp" role="table" aria-label="Alvenaria comparada ao steel frame">
+        <div class="cmp__row cmp__row--head" role="row"><span role="columnheader"></span><span role="columnheader">ALVENARIA</span><span role="columnheader">STEEL FRAME CITY STEEL</span></div>
+        {{CMP_ROWS}}
+      </div>
+      {{COTA_1}}
+    </div>
+  </section>
+
+  <!-- soluções -->
+  <section class="sec" id="solucoes">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="rv">Do projeto à entrega, <span class="ac">com a gente.</span></h2>
+        <p class="rv" data-d="1">Quem projeta conversa todo dia com quem executa. É assim que a obra sai do jeito que foi desenhada.</p>
+      </div>
+
+      <article class="sol">
+        <div class="frame rv"><div class="ph"><img src="{{IMG_ENG}}" alt="{{ALT_ENG}}" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+        <div class="sol__txt rv" data-d="1">
+          <h3>Engenharia que projeta e acompanha toda a obra.</h3>
+          <p>Os engenheiros da City Steel fazem o projeto da estrutura em aço junto com a sua arquitetura e acompanham cada etapa no canteiro. Quem desenhou é quem confere.</p>
+          <ul class="sol__list">
+            <li><b>01</b>Projeto da estrutura em steel frame</li>
+            <li><b>02</b>Ajuste do projeto com a arquitetura, a elétrica e a hidráulica</li>
+            <li><b>03</b>Acompanhamento técnico da obra, do início ao fim</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="sol sol--flip">
+        <div class="frame rv" data-d="1"><div class="ph"><img src="{{IMG_EXE}}" alt="{{ALT_EXE}}" width="1600" height="1067" loading="lazy" decoding="async"></div></div>
+        <div class="sol__txt rv">
+          <h3>Equipe de execução em todas as etapas.</h3>
+          <p>Da fundação ao acabamento, a obra fica com uma equipe só. Sem trocar de empreiteiro a cada fase e sem um culpando o outro quando algo atrasa.</p>
+          <ul class="sol__list">
+            <li><b>01</b>Fundação e estrutura</li>
+            <li><b>02</b>Fechamento, cobertura e instalações</li>
+            <li><b>03</b>Acabamento e entrega das chaves</li>
+          </ul>
+        </div>
+      </article>
+      {{COTA_2}}
+    </div>
+  </section>
+
+  <!-- obras: trilho horizontal -->
+  <section class="rail" id="obras">
+    <div class="rail__stage">
+      <div class="wrap rail__head">
+        <h2 class="rv">Casa, loja ou clínica: <span class="ac">tudo sobe em aço.</span></h2>
+      </div>
+      <div class="rail__track">
+        {{RAIL_CARDS}}
+      </div>
+    </div>
+  </section>
+
+  <!-- unidades -->
+  <section class="sec" id="unidades">
+    <div class="wrap uni">
+      <div class="uni__txt">
+        <h2 class="rv">Onde a City Steel <span class="ac">está.</span></h2>
+        <p class="rv" data-d="1">A sede fica em Alphaville, Barueri, e a rede de unidades está começando agora. A próxima pode ser na sua cidade.</p>
+        <div class="uni__card rv" data-d="2">
+          <h3>Sede Alphaville</h3>
+          <address>{{ENDERECO_HTML}}</address>
+          <a href="{{MAPA}}" target="_blank" rel="noopener">Abrir no mapa <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5"/></svg></a>
+        </div>
+        <div class="ctas rv" data-d="3" style="margin-top:1.6rem"><a class="btn btn--line" href="/franquia">Quero uma unidade na minha cidade {{ARROW}}</a></div>
+      </div>
+      <div class="mira rv" data-d="1" aria-hidden="true">{{MIRA}}</div>
+    </div>
+  </section>
+
+  <!-- franquia -->
+  <section class="sec" id="franquia">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="rv">Empreenda no <span class="ac">steel frame.</span></h2>
+        <p class="rv" data-d="1">Dois modelos para abrir a sua unidade, com a engenharia e a execução da City Steel por trás.</p>
+      </div>
+      <div class="models">
+        {{MODELS_HOME}}
+      </div>
+    </div>
+  </section>
+
+  <!-- contato -->
+  <section class="sec" id="contato">
+    <div class="wrap contact">
+      <div class="contact__txt">
+        <h2 class="rv">Vamos tirar o seu projeto <span class="ac">do papel.</span></h2>
+        <p class="rv" data-d="1">Conte o que você quer construir ou se quer abrir uma unidade. A gente responde pelo WhatsApp.</p>
+      </div>
+      <form class="form rv" data-d="1" data-c="contato" novalidate>
+        <div class="field"><label for="c-nome">Nome</label><input id="c-nome" name="nome" autocomplete="name" required></div>
+        <div class="field"><label for="c-zap">WhatsApp</label><input id="c-zap" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 90000-0000" required></div>
+        <div class="field"><label for="c-cidade">Cidade</label><input id="c-cidade" name="cidade" autocomplete="address-level2" required></div>
+        <div class="field"><label for="c-int">O que você procura</label>
+          <select id="c-int" name="interesse" required>
+            <option value="" disabled selected>Escolha</option>
+            <option>Construir uma casa</option>
+            <option>Construir loja, escritório ou clínica</option>
+            <option>Ampliação ou segundo andar</option>
+            <option>Ser franqueado</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="field field--full"><label for="c-msg">Conte um pouco (opcional)</label><textarea id="c-msg" name="mensagem" rows="2"></textarea></div>
+        <button class="btn btn--pri" type="submit">Enviar pelo WhatsApp {{ARROW}}</button>
+        <p class="form__note">Seus dados vão só para a equipe da City Steel.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+{{FOOT}}
+</body>
+</html>

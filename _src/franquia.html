@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+{{HEAD}}
+</head>
+<body>
+{{TOP}}
+<main>
+
+  <!-- topo: a mesma prancha, agora virando a unidade -->
+  <section class="story story--short" id="inicio" data-map="{{FRANQUIA_MAP}}" aria-label="A sua unidade City Steel">
+    <div class="story__stage">
+      <picture class="story__poster">
+        <source media="(max-width:860px)" srcset="/assets/img/franquia-poster-m.webp" width="900" height="1200">
+        <img src="/assets/img/franquia-poster.webp" alt="" width="1600" height="900" fetchpriority="high" decoding="async">
+      </picture>
+      <canvas class="story__canvas" aria-hidden="true"></canvas>
+      <div class="story__veil"></div>
+      <div class="story__text">
+        <div class="wrap">
+          <div class="beat beat--0" data-a="0" data-b=".55">
+            <h1>Empreenda no <span class="grad">steel frame.</span></h1>
+            <p>Um mercado em crescimento e com alta demanda. Abra uma unidade City Steel e conte com a engenharia e a execução da marca, da implantação ao crescimento.</p>
+            <div class="ctas">
+              <a class="btn btn--pri" href="#form">Quero ser franqueado {{ARROW}}</a>
+              <a class="btn btn--line" href="#modelos">Ver os modelos</a>
+            </div>
+          </div>
+          <div class="beat" data-a=".55" data-b="1.01">
+            <h2>A próxima unidade <span class="grad">pode ser sua.</span></h2>
+            <p>Loja, escritório ou home office. A marca, o método e a obra são os mesmos em qualquer cidade.</p>
+            <div class="ctas">
+              <a class="btn btn--pri" href="#modelos">Conhecer os modelos {{ARROW}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="story__hint" aria-hidden="true"><i></i>Role para ver a sua unidade</div>
+      <div class="story__rail" aria-hidden="true"><span class="story__label">ESTRUTURA</span><span class="story__bar"><i></i></span></div>
+    </div>
+  </section>
+
+  <!-- por que a City Steel -->
+  <section class="sec" id="porque">
+    <div class="wrap stack">
+      <div class="stack__head">
+        <h2 class="rv">Por que abrir uma <span class="ac">City Steel.</span></h2>
+        <p class="rv" data-d="1">Um método de construção em plena expansão no Brasil e uma marca que cuida de todo o processo, do projeto à entrega.</p>
+      </div>
+      <div class="stack__cards">
+        {{PILARES}}
+      </div>
+    </div>
+  </section>
+
+  <!-- modelos -->
+  <section class="sec" id="modelos">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="rv">Dois jeitos <span class="ac">de começar.</span></h2>
+        <p class="rv" data-d="1">Escolha o formato que combina com o seu momento. Os dois têm a marca, o método e o suporte da City Steel.</p>
+      </div>
+      <div class="models">
+        {{MODELS_FULL}}
+      </div>
+      {{COTA_3}}
+    </div>
+  </section>
+
+  <!-- como funciona -->
+  <section class="sec" id="como-funciona">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="rv">Como virar <span class="ac">franqueado.</span></h2>
+        <p class="rv" data-d="1">Quatro passos, sem pressa, para você decidir com todas as informações na mão.</p>
+      </div>
+      <div class="steps">
+        <span class="steps__fill" aria-hidden="true"></span>
+        {{STEPS}}
+      </div>
+    </div>
+  </section>
+
+  <!-- formulário -->
+  <section class="sec" id="form">
+    <div class="wrap contact">
+      <div class="contact__txt">
+        <h2 class="rv">Quero ser <span class="ac">franqueado.</span></h2>
+        <p class="rv" data-d="1">Deixe seus dados e a equipe de expansão da City Steel fala com você pelo WhatsApp.</p>
+      </div>
+      <form class="form rv" data-d="1" data-c="franquia" novalidate>
+        <div class="field"><label for="f-nome">Nome</label><input id="f-nome" name="nome" autocomplete="name" required></div>
+        <div class="field"><label for="f-zap">WhatsApp</label><input id="f-zap" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 90000-0000" required></div>
+        <div class="field"><label for="f-cidade">Cidade e estado</label><input id="f-cidade" name="cidade" autocomplete="address-level2" required></div>
+        <div class="field"><label for="f-modelo">Modelo de interesse</label>
+          <select id="f-modelo" name="interesse" required>
+            <option value="" disabled selected>Escolha</option>
+            <option>Loja ou escritório</option>
+            <option>Home office</option>
+            <option>Ainda não sei</option>
+          </select>
+        </div>
+        <div class="field field--full"><label for="f-msg">Algo que a gente precisa saber? (opcional)</label><textarea id="f-msg" name="mensagem" rows="2"></textarea></div>
+        <button class="btn btn--pri" type="submit">Enviar pelo WhatsApp {{ARROW}}</button>
+        <p class="form__note">Seus dados vão só para a equipe de expansão da City Steel.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+{{FOOT}}
+</body>
+</html>

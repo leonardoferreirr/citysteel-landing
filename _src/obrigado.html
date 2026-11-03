@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+{{HEAD}}
+</head>
+<body>
+<div class="grid-bg" aria-hidden="true"></div>
+<main class="thanks">
+  <div>
+    <img src="/assets/img/logo-full.svg" alt="City Steel Steel Frame" width="180" height="120">
+    <h1>Estamos abrindo <span class="ac">a conversa.</span></h1>
+    <p id="dest-txt">Em instantes você fala com a equipe da City Steel.</p>
+    <div class="spin" aria-hidden="true"></div>
+    <div class="ctas">
+      <a class="btn btn--pri" id="go" href="{{INSTAGRAM_DM}}">Abrir agora {{ARROW}}</a>
+      <a class="btn btn--line" href="/">Voltar ao site</a>
+    </div>
+  </div>
+</main>
+<script>
+(function(){
+  var W='{{WHATSAPP}}', IG='{{INSTAGRAM_DM}}', msg='Olá! Vim pelo site da City Steel.';
+  try{ msg = sessionStorage.getItem('cs_msg') || msg; sessionStorage.removeItem('cs_msg'); }catch(e){}
+  var dest = W ? 'https://wa.me/' + W + '?text=' + encodeURIComponent(msg) : IG;
+  var go = document.getElementById('go'); go.href = dest;
+  if(!W){ document.getElementById('dest-txt').textContent = 'Vamos te levar para o Direct do Instagram da City Steel.'; }
+  var c = (new URLSearchParams(location.search).get('c') || 'site').replace(/[^a-z0-9_-]/gi,'');
+  var t0 = Date.now(), partiu = false, ok = false;
+  function vai(){ if(partiu) return; partiu = true; location.replace(dest); }
+  function talvez(){ ok = true; var falta = 900 - (Date.now() - t0); setTimeout(vai, falta > 0 ? falta : 0); }
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event:'conversao_whatsapp', contexto:c, eventCallback:talvez, eventTimeout:2000 });
+  if(!window.google_tag_manager){ talvez(); }
+  setTimeout(vai, 2600);
+})();
+</script>
+</body>
+</html>
