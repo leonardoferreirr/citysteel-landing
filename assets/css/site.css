@@ -442,7 +442,8 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
 .album__miniaturas img{width:100%;height:100%;object-fit:cover}
 .album-aberto{overflow:hidden}
 @media (max-width:860px){
-  .card__ver{align-self:center}
+  .card:not(.card--cta){align-self:flex-start}
+  .card__ver{align-self:center;margin-top:.2rem}
   .album__palco{padding:0 .6rem}
   .album__seta{width:2.6rem;height:2.6rem;top:auto;bottom:-3.4rem;transform:none}
   .album__legenda{padding-inline:4rem}
@@ -451,7 +452,8 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
   /* com o texto da faixa e o Ver obras, o card inteiro precisa caber na tela fixa */
   .rail__head{margin-bottom:clamp(1.6rem,3vw,2.4rem)}
   .rail__head p{max-width:60rem}
-  .card .ph,.card__cta{max-height:clamp(14rem,calc(100svh - 37rem),56vh)}
+  /* a foto ocupa toda a largura da moldura laranja; a altura é o que sobra da tela */
+  .card .ph{aspect-ratio:auto;width:100%;height:clamp(14rem,calc(100svh - 37rem),56vh);max-height:none}
 }
 
 /* ---------- páginas /obras/<categoria> ---------- */
@@ -478,4 +480,24 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
   .galeria__item,.galeria__item:first-child,.galeria__item:last-child:nth-child(even){grid-column:auto;aspect-ratio:4/3}
   .outras{grid-template-columns:repeat(2,1fr)}
   .outra span{font-size:.86rem}
+}
+
+/* ---------- chamada "Tem um projeto em mente?" entre as soluções e as unidades ---------- */
+.proj-sec{padding-block:clamp(2rem,5vw,4rem)}
+.proj{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.2rem;padding:clamp(2.4rem,5vw,4rem) clamp(1.5rem,5vw,4rem);
+  border:1px dashed rgba(255,106,19,.55);border-radius:4px;background:repeating-linear-gradient(135deg,transparent 0 18px,rgba(255,106,19,.035) 18px 19px)}
+.proj h2{font-size:var(--t-h2);margin-inline:auto;text-wrap:balance}
+.proj p{max-width:34rem;color:var(--muted)}
+.proj .btn{margin-top:.4rem}
+@media (min-width:861px) and (max-height:760px){
+  /* telas baixas (notebook com a janela menor): tudo da faixa ainda cabe na tela fixa */
+  .rail__stage{padding-top:4.4rem}
+  .rail__head{margin-bottom:1rem}
+  .rail__head h2{font-size:clamp(1.7rem,2.6vw,2.4rem)}
+  .rail__head p{margin-top:.5rem;font-size:.86rem;line-height:1.5}
+  .card{width:clamp(19rem,34vw,27rem)}
+  .card .ph{height:clamp(8.5rem,calc(100svh - 27rem),40vh)}
+  .card h3{margin-top:.7rem;font-size:1.05rem}
+  .card:not(.card--cta) p{margin-top:.3rem;margin-bottom:.8rem;font-size:.82rem;line-height:1.5}
+  .card__ver{height:2.35rem;padding:0 1.05rem;font-size:.8rem}
 }

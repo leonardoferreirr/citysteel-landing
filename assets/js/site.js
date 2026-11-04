@@ -4,7 +4,7 @@
   const d = document, h = d.documentElement, w = window;
   const mob = w.matchMedia('(max-width:860px)');
   const rm = w.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const F3D = '/assets/js/frame3d.js?v=f4255f6c84';
+  const F3D = '/assets/js/frame3d.js?v=bf6b750a28';
   let lenis = null;
 
   /* ---------- cabeçalho e menu ---------- */

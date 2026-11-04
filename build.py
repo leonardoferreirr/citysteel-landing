@@ -208,10 +208,6 @@ def rail_cards():
                f'aria-label="Ver obras de {t.lower()} (abre em outra guia)">Ver obras {ARROW}</a>')
         out.append(f'<article class="card rv" data-d="{min(i,3)}"><div class="frame"><div class="ph">'
                    f'{img(base, alt, sizes="(max-width:860px) 78vw, 34vw")}</div></div><h3>{t}</h3><p>{p}</p>{ver}</article>')
-    out.append('<article class="card card--cta rv" data-d="3"><div class="card__cta">'
-               '<h3>Tem um projeto em mente?</h3><p>Mande a planta, o terreno ou só a ideia. '
-               'A engenharia da City Steel mostra o caminho em aço.</p>'
-               f'<a class="btn btn--pri" href="#contato">Falar com a engenharia {ARROW}</a></div></article>')
     return "\n        ".join(out)
 
 
