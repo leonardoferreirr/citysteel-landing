@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+{{HEAD}}
+</head>
+<body>
+{{TOP}}
+<main>
+  <!-- obras de uma categoria (o botão Ver obras de cada card da home abre esta página) -->
+  <section class="obra-topo">
+    <div class="wrap">
+      <h1 class="rv">{{OBRA_TITULO}}</h1>
+      <p class="rv" data-d="1">{{OBRA_TEXTO}}</p>
+    </div>
+  </section>
+
+  <section class="sec obra-galeria">
+    <div class="wrap">
+      <div class="galeria">
+        {{OBRA_FOTOS}}
+      </div>
+    </div>
+  </section>
+
+  <section class="sec obra-outras">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="rv">Veja outras <span class="ac">soluções.</span></h2>
+      </div>
+      <div class="outras">
+        {{OBRA_OUTRAS}}
+      </div>
+      <div class="ctas obra-ctas rv">
+        <a class="btn btn--pri" href="/#contato">Quero construir {{ARROW}}</a>
+        <a class="btn btn--line" href="/obrigado?c=obras">Falar no WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</main>
+{{ALBUM}}
+{{FOOT}}
+</body>
+</html>

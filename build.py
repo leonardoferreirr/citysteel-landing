@@ -63,7 +63,7 @@ def img(base, alt, sizes="(max-width:860px) 92vw, 46vw", w=1600, h=1067, lazy=Tr
     attrs = f'src="/assets/img/{base}-1600.webp"'
     if srcset:
         attrs += f' srcset="{srcset}" sizes="{sizes}"'
-    lz = ' loading="lazy"' if lazy else ""
+    lz = ' loading="lazy"' if lazy else (' fetchpriority="high"' if lazy is None else "")
     return f'<img {attrs} alt="{alt}" width="{w}" height="{h}"{lz} decoding="async">'
 
 
@@ -83,18 +83,41 @@ CMP = [
      "Paredes em camadas, com isolamento térmico e acústico."),
 ]
 
-# (imagem base, alt, título, texto). Fotos de banco ilustram o tipo de obra; trocar
-# pelas obras reais da City Steel quando chegarem.
+# (imagem base, alt, título, texto, fotos da página de obras, slug em /obras/<slug>). As três primeiras fotos e textos vieram do
+# cliente em 04/11; o resto ainda é foto de banco. Trocar os álbuns pelas obras reais quando chegarem.
 RAIL = [
-    ("casa-entardecer-madeira", "Casa contemporânea de volumes retos com madeira, em silhueta ao entardecer", "Casas de alto padrão",
-     "Projetos exclusivos, com grandes vãos, fachada contemporânea e obra limpa no seu terreno."),
-    ("loja-fachada", "Fachada de uma loja City Steel com letreiro iluminado e frente de vidro", "Lojas, escritórios e clínicas",
-     "O ponto comercial fica pronto antes, e o seu negócio abre as portas mais cedo."),
+    ("obra-condominio", "Portaria de um condomínio residencial com paisagismo iluminado ao entardecer", "Empreendimentos imobiliários",
+     "Realizamos empreendimentos imobiliários desenvolvidos com tecnologia Steel Frame.",
+     ["obra-condominio", "obra-casa-aerea", "execucao-montagem", "obra-paineis"], "empreendimentos"),
+    ("obra-residencia", "Residência contemporânea de dois pavimentos com pedra, vidro e garagem coberta, iluminada à noite", "Residências exclusivas",
+     "Construímos residências exclusivas, unindo arquitetura sofisticada, tecnologia construtiva, precisão e excelência em cada detalhe.",
+     ["obra-residencia", "casa-volume-vidro", "casa-entardecer-madeira", "obra-casa-aerea"], "residencias"),
+    ("obra-comercial", "Prédio comercial de dois andares com fachada de vidro, madeira e pedra, iluminado ao anoitecer", "Projetos comerciais",
+     "Transformamos projetos comerciais em realidade através da tecnologia Steel Frame. Construímos lojas, escritórios, galpões e "
+     "espaços corporativos com agilidade, precisão, eficiência e alto padrão de acabamento, oferecendo soluções modernas para empresas e investidores.",
+     ["obra-comercial", "loja-fachada", "engenharia-cad", "obra-tesouras"], "comerciais"),
     ("obra-tesouras", "Tesouras treliçadas de perfil de aço galvanizado parafusado", "Ampliações e segundo andar",
-     "Estrutura leve, que pesa pouco sobre o que já existe. Ideal para subir um andar ou fazer um anexo."),
+     "Estrutura leve, que pesa pouco sobre o que já existe. Ideal para subir um andar ou fazer um anexo.",
+     ["obra-tesouras", "obra-paineis", "execucao-montagem"], "ampliacoes"),
     ("casa-pedra-vidro", "Casa térrea de vidro e madeira entre paredes de pedra, acesa ao anoitecer", "Espaços de lazer",
-     "Área gourmet, edícula ou casa de campo, com a mesma precisão de uma obra grande."),
+     "Área gourmet, edícula ou casa de campo, com a mesma precisão de uma obra grande.",
+     ["casa-pedra-vidro", "casa-entardecer-madeira"], "lazer"),
 ]
+# legenda de cada foto dentro do álbum
+ALT_ALBUM = {
+    "obra-condominio": "Portaria de condomínio residencial ao entardecer",
+    "obra-residencia": "Residência contemporânea de dois pavimentos, iluminada à noite",
+    "obra-comercial": "Prédio comercial com fachada de vidro e madeira",
+    "obra-casa-aerea": "Vista aérea de uma casa térrea com a estrutura em steel frame montada",
+    "execucao-montagem": "Montagem dos perfis de aço de uma estrutura de dois pavimentos",
+    "obra-paineis": "Painéis de parede em steel frame, com perfis parafusados",
+    "obra-tesouras": "Tesouras treliçadas de perfil de aço galvanizado",
+    "casa-volume-vidro": "Casa de laje plana com brises e vidro do piso ao teto",
+    "casa-entardecer-madeira": "Casa contemporânea com fachada de madeira ao entardecer",
+    "loja-fachada": "Fachada de loja City Steel com letreiro iluminado",
+    "engenharia-cad": "Modelo 3D da estrutura metálica no computador",
+    "casa-pedra-vidro": "Casa térrea de vidro, madeira e pedra na hora azul",
+}
 
 MODELOS = [
     {
@@ -150,16 +173,65 @@ def cmp_rows():
         for k, a, b in CMP)
 
 
+def album_json(bases):
+    """Fotos do álbum para o data-album: grande, média, legenda e largura real."""
+    from PIL import Image
+    fotos = []
+    for base in bases:
+        p = IMG / f"{base}-1600.webp"
+        if not p.exists():
+            print(f"  ! álbum: falta {base}-1600.webp")
+            continue
+        with Image.open(p) as im:
+            w, h = im.size
+        fotos.append({"s": f"/assets/img/{base}-1600.webp", "m": f"/assets/img/{base}-900.webp", "a": ALT_ALBUM.get(base, ""), "w": w, "h": h})
+    return json.dumps(fotos, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+
+
+ALBUM_HTML = """<dialog class="album" id="album" aria-label="Fotos da obra">
+  <div class="album__topo"><p><span class="album__titulo"></span><span class="album__n"></span></p>
+    <button class="album__fecha" type="button" aria-label="Fechar álbum"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5"/></svg></button></div>
+  <div class="album__palco">
+    <button class="album__seta album__seta--ant" type="button" aria-label="Foto anterior"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M14 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <img alt="" decoding="async">
+    <button class="album__seta album__seta--prox" type="button" aria-label="Próxima foto"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></button>
+  </div>
+  <p class="album__legenda"></p>
+  <div class="album__miniaturas"></div>
+</dialog>"""
+
+
 def rail_cards():
     out = []
-    for i, (base, alt, t, p) in enumerate(RAIL):
+    for i, (base, alt, t, p, _fotos, slug) in enumerate(RAIL):
+        ver = (f'<a class="btn btn--pri card__ver" href="/obras/{slug}" target="_blank" rel="noopener" '
+               f'aria-label="Ver obras de {t.lower()} (abre em outra guia)">Ver obras {ARROW}</a>')
         out.append(f'<article class="card rv" data-d="{min(i,3)}"><div class="frame"><div class="ph">'
-                   f'{img(base, alt, sizes="(max-width:860px) 78vw, 34vw")}</div></div><h3>{t}</h3><p>{p}</p></article>')
+                   f'{img(base, alt, sizes="(max-width:860px) 78vw, 34vw")}</div></div><h3>{t}</h3><p>{p}</p>{ver}</article>')
     out.append('<article class="card card--cta rv" data-d="3"><div class="card__cta">'
                '<h3>Tem um projeto em mente?</h3><p>Mande a planta, o terreno ou só a ideia. '
                'A engenharia da City Steel mostra o caminho em aço.</p>'
                f'<a class="btn btn--pri" href="#contato">Falar com a engenharia {ARROW}</a></div></article>')
     return "\n        ".join(out)
+
+
+def obra_blocos(i):
+    """Marcadores da página /obras/<slug>: título, texto, galeria, outras categorias e o visualizador."""
+    base, alt, titulo, texto, fotos, slug = RAIL[i]
+    galeria = []
+    for k, f in enumerate(fotos):
+        legenda = ALT_ALBUM.get(f, alt)
+        galeria.append(f'<button class="galeria__item rv" data-d="{min(k,3)}" type="button" data-foto="{k}" aria-label="Ampliar: {legenda}">'
+                       f'{img(f, legenda, sizes="(max-width:860px) 92vw, 60vw" if k == 0 else "(max-width:860px) 92vw, 40vw", lazy=True if k else None)}</button>')
+    outras = []
+    for j, (b2, a2, t2, _p2, _f2, s2) in enumerate(RAIL):
+        if j == i:
+            continue
+        outras.append(f'<a class="outra rv" data-d="{min(len(outras),3)}" href="/obras/{s2}"><div class="ph">'
+                      f'{img(b2, a2, sizes="(max-width:860px) 46vw, 22vw")}</div><span>{t2} {ARROW}</span></a>')
+    dados = f'<script type="application/json" id="album-fotos">{album_json(fotos)}</script>'
+    return {"OBRA_TITULO": titulo, "OBRA_TEXTO": texto, "OBRA_FOTOS": "\n        ".join(galeria),
+            "OBRA_OUTRAS": "\n        ".join(outras), "ALBUM": ALBUM_HTML + "\n" + dados}
 
 
 def models(completo):
@@ -270,7 +342,7 @@ def schema(nome, pg):
                   "price": re.sub(r"\D", "", m["preco"]), "priceCurrency": "BRL", "url": f"{S}/franquia#modelos",
                   "category": "Franquia", "seller": org})
         franquia.append(o)
-    obras = [oferta(t, p, "Construção em steel frame", sede) for _, _, t, p in RAIL]
+    obras = [oferta(t, p, "Construção em steel frame", sede) for _, _, t, p, *_ in RAIL]
     servicos = [oferta(h.rstrip("."), f"{p} Inclui: {'; '.join(i).lower()}.", "Construção em steel frame", sede) for h, p, i in solucoes()]
     marca = {"@type": "Organization", **org, "name": "City Steel", "alternateName": "City Steel Steel Frame",
              "description": "Construção em steel frame do projeto à entrega e franquia de construção em steel frame, "
@@ -317,7 +389,7 @@ def llms():
            "- Empresa: City Steel (no logo, City Steel Steel Frame).",
            "- O que faz: construção em steel frame do projeto à entrega, com engenharia que projeta e acompanha "
            "toda a obra e equipe de execução em todas as etapas.",
-           "- Tipos de obra: " + "; ".join(t.lower() for _, _, t, _ in RAIL) + ".",
+           "- Tipos de obra: " + "; ".join(t.lower() for _, _, t, *_ in RAIL) + ".",
            f"- Sede: {ENDERECO[0]}, {ENDERECO[1]}.",
            "- Unidades: a sede fica em Alphaville, Barueri, e a rede de unidades está começando agora.",
            "- Franquia: " + "; ".join(f"{m['nome'].lower()}, investimento de {m['preco']}" for m in MODELOS) + ".",
@@ -328,7 +400,7 @@ def llms():
         lin += [f"### {h.rstrip('.')}", "", p, ""] + [f"- {i}" for i in itens] + [""]
     lin += ["### Steel frame comparado à alvenaria", ""]
     lin += [f"- **{k}:** alvenaria: {a} Steel frame City Steel: {b}" for k, a, b in CMP]
-    lin += ["", "### Tipos de obra", ""] + [f"- **{t}:** {p}" for _, _, t, p in RAIL]
+    lin += ["", "### Tipos de obra", ""] + [f"- **{t}:** {p}" for _, _, t, p, *_ in RAIL]
     lin += ["", "## Franquia City Steel", "", abre(fra), "", "### Modelos", ""]
     for m in MODELOS:
         lin += [f"- **{m['nome']}, investimento de {m['preco']}:** {m['texto']} Pontos do modelo: " + "; ".join(i.lower() for i in m["itens"]) + "."]
@@ -427,6 +499,20 @@ PAGINAS = {
         preload="", nav_franquia="", cta=("", ""), robots="noindex,nofollow"),
 }
 
+def preload_img(base, sizes):
+    from PIL import Image
+    with Image.open(IMG / f"{base}-1600.webp") as im:
+        w = im.size[0]
+    return (f'<link rel="preload" as="image" imagesrcset="/assets/img/{base}-900.webp 900w, /assets/img/{base}-1600.webp {w}w" '
+            f'imagesizes="{sizes}" fetchpriority="high">')
+
+
+for _i, (_b, _a, _t, _p, _f, _s) in enumerate(RAIL):
+    PAGINAS[f"obra-{_s}"] = dict(
+        arquivo=f"obras/{_s}.html", path=f"/obras/{_s}", tpl="obra", obra=_i,
+        title=f"{_t} em steel frame | Obras City Steel", trilha=_t, desc=_p if len(_p) <= 160 else _p[:157].rsplit(" ", 1)[0] + "...",
+        preload=preload_img(_f[0], "(max-width:860px) 92vw, 60vw"), nav_franquia="", cta=("Fale com a gente", "/#contato"))
+
 
 def main():
     carimbar_f3d()
@@ -442,8 +528,8 @@ def main():
         "IMG_ENG": "", "IMG_EXE": "",
     }
     # imagens das soluções (src cru porque ficam dentro de <img> no template)
-    for chave, base, alt in (("ENG", "engenharia-prancheta", "Mãos desenhando um projeto na prancha, com escalímetro"),
-                             ("EXE", "obra-paineis", "Painéis de parede em steel frame, com perfis de aço parafusados")):
+    for chave, base, alt in (("ENG", "engenharia-capacete", "Capacete da City Steel sobre o projeto da estrutura em steel frame, com a obra ao fundo"),
+                             ("EXE", "equipe-city-steel", "Equipe da City Steel de uniforme e capacete diante de uma obra em steel frame")):
         blocos[f"IMG_{chave}"] = img(base, alt, sizes="(max-width:860px) 92vw, 46vw")
     jsv = hash_de(JS)
     mudou = set()
@@ -456,14 +542,16 @@ def main():
         top = (top_t.replace("{{NAV_FRANQUIA}}", pg["nav_franquia"])
                .replace("{{TOP_CTA}}", pg["cta"][0]).replace("{{TOP_CTA_HREF}}", pg["cta"][1]))
         foot = foot_t.replace("{{JSV}}", jsv).replace("{{MARQUEE}}", marquee())
-        html = (SRC / f"{nome}.html").read_text()
+        html = (SRC / f"{pg.get('tpl', nome)}.html").read_text()
         html = html.replace("{{HEAD}}", head).replace("{{TOP}}", top).replace("{{FOOT}}", foot)
-        for k, v in blocos.items():
+        proprios = obra_blocos(pg["obra"]) if "obra" in pg else {}
+        for k, v in {**blocos, **proprios}.items():
             html = html.replace("{{" + k + "}}", v)
         sobra = re.findall(r"\{\{[A-Z_0-9]+\}\}", html)
         if sobra:
             print(f"  ! {nome}: marcadores sem valor {sorted(set(sobra))}")
         destino = RAIZ / pg["arquivo"]
+        destino.parent.mkdir(parents=True, exist_ok=True)
         if not destino.exists() or destino.read_text() != html:
             mudou.add(pg["path"])
             destino.write_text(html)
@@ -475,7 +563,7 @@ def main():
     antes = dict(re.findall(r"<loc>https?://[^/<]+(/[^<]*)</loc><lastmod>([\d-]+)</lastmod>", mapa.read_text())) if mapa.exists() else {}
     hoje = date.today().isoformat()
     urls = "".join(f"  <url><loc>{DOMINIO}{p}</loc><lastmod>{hoje if p in mudou or p not in antes else antes[p]}</lastmod></url>\n"
-                   for p in ("/", "/franquia"))
+                   for p in ["/", "/franquia"] + [f"/obras/{r[-1]}" for r in RAIL])
     mapa.write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
     (RAIZ / "llms.txt").write_text(llms())
     vercel_json()

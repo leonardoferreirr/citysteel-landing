@@ -6,7 +6,7 @@
 
 - Empresa: City Steel (no logo, City Steel Steel Frame).
 - O que faz: construção em steel frame do projeto à entrega, com engenharia que projeta e acompanha toda a obra e equipe de execução em todas as etapas.
-- Tipos de obra: casas de alto padrão; lojas, escritórios e clínicas; ampliações e segundo andar; espaços de lazer.
+- Tipos de obra: empreendimentos imobiliários; residências exclusivas; projetos comerciais; ampliações e segundo andar; espaços de lazer.
 - Sede: Alameda Araguaia, 2190, 10º andar, Alphaville, Barueri, SP.
 - Unidades: a sede fica em Alphaville, Barueri, e a rede de unidades está começando agora.
 - Franquia: loja ou escritório, investimento de R$ 120.000; home office, investimento de R$ 9.900.
@@ -42,8 +42,9 @@ Da fundação ao acabamento, a obra fica com uma equipe só. Sem trocar de empre
 
 ### Tipos de obra
 
-- **Casas de alto padrão:** Projetos exclusivos, com grandes vãos, fachada contemporânea e obra limpa no seu terreno.
-- **Lojas, escritórios e clínicas:** O ponto comercial fica pronto antes, e o seu negócio abre as portas mais cedo.
+- **Empreendimentos imobiliários:** Realizamos empreendimentos imobiliários desenvolvidos com tecnologia Steel Frame.
+- **Residências exclusivas:** Construímos residências exclusivas, unindo arquitetura sofisticada, tecnologia construtiva, precisão e excelência em cada detalhe.
+- **Projetos comerciais:** Transformamos projetos comerciais em realidade através da tecnologia Steel Frame. Construímos lojas, escritórios, galpões e espaços corporativos com agilidade, precisão, eficiência e alto padrão de acabamento, oferecendo soluções modernas para empresas e investidores.
 - **Ampliações e segundo andar:** Estrutura leve, que pesa pouco sobre o que já existe. Ideal para subir um andar ou fazer um anexo.
 - **Espaços de lazer:** Área gourmet, edícula ou casa de campo, com a mesma precisão de uma obra grande.
 

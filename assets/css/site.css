@@ -72,7 +72,7 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
 .top__in{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;height:4.75rem}
 .top.solid{background:rgba(10,10,11,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;flex:none}
-.brand img{height:2.35rem;width:auto}
+.brand img{height:3.3rem;width:auto}
 .nav{display:flex;align-items:center;gap:.4rem}
 .nav a{padding:.5rem 1rem;border-radius:var(--radius-pill);border:1px solid var(--line-2);font-size:.86rem;color:var(--fg);
   transition:border-color .3s var(--ease-out),color .3s var(--ease-out),background-color .3s var(--ease-out)}
@@ -332,7 +332,7 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
   .menu-open .nav a:not(.btn){display:block;text-align:center;padding:.9rem 1rem}
   .menu-open .nav .btn{margin:.4rem 0 0;height:3.1rem}
   .top__in{height:4.75rem}
-  .brand img{height:2rem}
+  .brand img{height:2.75rem}
 
   .story__veil{background:linear-gradient(180deg,rgba(10,10,11,.94) 0%,rgba(10,10,11,.7) 40%,rgba(10,10,11,0) 62%)}
   .story__poster img{object-position:50% 50%}
@@ -412,4 +412,70 @@ h3{font-weight:400;letter-spacing:-.015em;line-height:1.2;font-size:var(--t-h3)}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
   .js .rv{opacity:1;transform:none}
   .grid-bg{transform:none}
+}
+
+/* ---------- 04/11: texto da faixa de soluções, Ver obras e álbum ---------- */
+.rail__head p{margin:1.1rem auto 0;max-width:46rem;color:var(--muted)}
+.card:not(.card--cta){display:flex;flex-direction:column}
+.card:not(.card--cta) p{margin-bottom:1.3rem}
+.card__ver{align-self:flex-start;margin-top:auto;height:2.75rem;padding:0 1.3rem;font-size:.84rem}
+.sol--flip .ph img{object-position:50% 0}
+.album{width:100vw;height:100svh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:rgba(10,10,11,.97);color:var(--fg);overscroll-behavior:contain}
+.album::backdrop{background:rgba(0,0,0,.75)}
+.album[open]{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto}
+.album__topo{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem var(--gutter)}
+.album__titulo{font-size:1.1rem}
+.album__n{margin-left:.9rem;font-size:.86rem;color:var(--muted)}
+.album__fecha,.album__seta{flex:none;display:grid;place-items:center;width:3rem;height:3rem;border-radius:50%;border:1px solid var(--line-2);background:rgba(10,10,11,.6);color:var(--fg);cursor:pointer;transition:border-color .3s var(--ease-out),color .3s var(--ease-out)}
+.album__fecha:hover,.album__seta:hover{border-color:var(--accent);color:var(--accent)}
+.album__fecha svg,.album__seta svg{width:1rem;height:1rem}
+.album__palco{position:relative;display:flex;align-items:center;justify-content:center;min-height:0;padding:0 clamp(1rem,7vw,6.5rem)}
+.album__palco img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:4px;animation:album-entra .45s var(--ease-out)}
+@keyframes album-entra{from{opacity:0;transform:scale(.985)}}
+.album__seta{position:absolute;top:50%;transform:translateY(-50%);z-index:2}
+.album__seta--ant{left:clamp(.5rem,2vw,1.6rem)}
+.album__seta--prox{right:clamp(.5rem,2vw,1.6rem)}
+.album__legenda{padding:1rem var(--gutter) .8rem;text-align:center;font-size:.9rem;color:var(--muted)}
+.album__miniaturas{display:flex;justify-content:center;gap:.5rem;padding:0 var(--gutter) 1.4rem;overflow-x:auto;scrollbar-width:none}
+.album__miniaturas button{flex:none;width:4.4rem;height:3.1rem;padding:0;border:1px solid var(--line-2);border-radius:4px;overflow:hidden;background:none;cursor:pointer;opacity:.5;transition:opacity .3s,border-color .3s}
+.album__miniaturas button[aria-current="true"]{opacity:1;border-color:var(--accent)}
+.album__miniaturas img{width:100%;height:100%;object-fit:cover}
+.album-aberto{overflow:hidden}
+@media (max-width:860px){
+  .card__ver{align-self:center}
+  .album__palco{padding:0 .6rem}
+  .album__seta{width:2.6rem;height:2.6rem;top:auto;bottom:-3.4rem;transform:none}
+  .album__legenda{padding-inline:4rem}
+}
+@media (min-width:861px){
+  /* com o texto da faixa e o Ver obras, o card inteiro precisa caber na tela fixa */
+  .rail__head{margin-bottom:clamp(1.6rem,3vw,2.4rem)}
+  .rail__head p{max-width:60rem}
+  .card .ph,.card__cta{max-height:clamp(14rem,calc(100svh - 37rem),56vh)}
+}
+
+/* ---------- páginas /obras/<categoria> ---------- */
+.obra-topo{padding:clamp(8.5rem,16vh,11rem) 0 clamp(2.5rem,5vw,3.5rem);text-align:center}
+.obra-topo h1{font-size:var(--t-h2);margin-inline:auto;max-width:52rem}
+.obra-topo p{margin:1.3rem auto 0;max-width:44rem;color:var(--muted);font-size:clamp(1rem,.95rem + .3vw,1.15rem)}
+.obra-galeria{padding-top:0}
+.galeria{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(.8rem,1.6vw,1.2rem)}
+.galeria__item{position:relative;display:block;padding:0;border:0;border-radius:4px;overflow:hidden;background:var(--surface);cursor:zoom-in;aspect-ratio:3/2}
+.galeria__item:first-child,.galeria__item:last-child:nth-child(even){grid-column:1/-1;aspect-ratio:16/8}
+.galeria__item img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease-out)}
+.galeria__item:hover img{transform:scale(1.035)}
+.galeria__item::after{content:"";position:absolute;inset:0;border:1px solid transparent;border-radius:4px;transition:border-color .4s var(--ease-out)}
+.galeria__item:hover::after{border-color:var(--accent)}
+.outras{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(.8rem,1.6vw,1.2rem)}
+.outra{display:flex;flex-direction:column;gap:.8rem}
+.outra .ph{aspect-ratio:4/3}
+.outra span{display:flex;align-items:center;gap:.5rem;font-size:.95rem;transition:color .3s var(--ease-out)}
+.outra span svg{width:.9rem;height:.9rem;flex:none}
+.outra:hover span{color:var(--accent)}
+.obra-ctas{justify-content:center;margin-top:clamp(2.6rem,5vw,3.6rem)}
+@media (max-width:860px){
+  .galeria{grid-template-columns:1fr}
+  .galeria__item,.galeria__item:first-child,.galeria__item:last-child:nth-child(even){grid-column:auto;aspect-ratio:4/3}
+  .outras{grid-template-columns:repeat(2,1fr)}
+  .outra span{font-size:.86rem}
 }

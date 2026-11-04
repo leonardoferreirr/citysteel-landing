@@ -23,3 +23,11 @@ Fotos de banco vêm do Unsplash, sob a [Licença Unsplash](https://unsplash.com/
 | `loja-fachada-{1600,900}.webp` | `assets/src/loja-fachada.jpg` (o original tem 1341 px, por isso a versão "1600" ficou com 1341 px: não foi ampliada) |
 | `home-office-{1600,900}.webp` | `assets/src/home-office-notebook.jpg` |
 | `logo-mark.svg`, `logo-full.svg`, `logo-header.svg`, `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `og-image.jpg` | Vetorizados a partir de `assets/src/logo-original.jpg` |
+| `engenharia-capacete-{1600,900}.webp` | `assets/src/engenharia-capacete.jpg` (WhatsApp, 04/11; 1254 px, não ampliada) |
+| `equipe-city-steel-{1600,900}.webp` | `assets/src/equipe-city-steel.png` (WhatsApp, 04/11; 933 px, não ampliada) |
+| `obra-condominio-{1600,900}.webp`, `obra-residencia-…`, `obra-comercial-…` | `assets/src/obra-*.jpg` (WhatsApp, 04/11; 1280 px). Fotos e textos dos cards de soluções |
+
+## Páginas de obras
+`/obras/<categoria>` sai do `RAIL` no `build.py` (template `_src/obra.html`): o último item de cada card é o slug e a lista de fotos do álbum.
+Hoje os álbuns misturam a foto do cliente com fotos de banco da mesma categoria. Trocar pelas obras reais quando chegarem:
+basta salvar `assets/img/<nome>-{1600,900}.webp`, pôr o nome na lista do card e a legenda em `ALT_ALBUM`.

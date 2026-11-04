@@ -159,6 +159,54 @@
     location.href = `/obrigado?c=${encodeURIComponent(form.dataset.c || 'form')}`;
   }));
 
+  /* ---------- fotos em tela cheia nas páginas /obras/<categoria> ---------- */
+  const album = d.getElementById('album');
+  if (album && typeof album.showModal === 'function') {
+    d.body.appendChild(album);           // fora do trilho que anda com transform
+    const foto = album.querySelector('.album__palco img'), palco = album.querySelector('.album__palco');
+    const titulo = album.querySelector('.album__titulo'), num = album.querySelector('.album__n');
+    const legenda = album.querySelector('.album__legenda'), minis = album.querySelector('.album__miniaturas');
+    let fotos = [], k = 0;
+    const mostra = i => {
+      if (!fotos.length) return;
+      k = (i + fotos.length) % fotos.length;
+      const f = fotos[k];
+      foto.style.animation = 'none'; void foto.offsetWidth; foto.style.animation = '';
+      foto.srcset = `${f.m} 900w, ${f.s} ${f.w}w`; foto.sizes = '100vw'; foto.src = f.s; foto.alt = f.a;
+      legenda.textContent = f.a;
+      num.textContent = `${k + 1} / ${fotos.length}`;
+      minis.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', String(j === k)));
+    };
+    try { fotos = JSON.parse((d.getElementById('album-fotos') || {}).textContent || '[]'); } catch (_) { fotos = []; }
+    minis.innerHTML = fotos.map((f, j) => `<button type="button" aria-label="Foto ${j + 1}"><img src="${f.m}" alt="" loading="lazy"></button>`).join('');
+    minis.querySelectorAll('button').forEach((x, j) => x.addEventListener('click', () => mostra(j)));
+    titulo.textContent = (d.querySelector('.obra-topo h1') || {}).textContent || '';
+    d.querySelectorAll('[data-foto]').forEach(b => b.addEventListener('click', () => {
+      if (!fotos.length) return;
+      mostra(+b.dataset.foto);
+      album.showModal();
+      h.classList.add('album-aberto');
+      lenis && lenis.stop();
+    }));
+    album.querySelector('.album__seta--ant').addEventListener('click', () => mostra(k - 1));
+    album.querySelector('.album__seta--prox').addEventListener('click', () => mostra(k + 1));
+    album.querySelector('.album__fecha').addEventListener('click', () => album.close());
+    album.addEventListener('close', () => { h.classList.remove('album-aberto'); lenis && lenis.start(); });
+    album.addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') mostra(k - 1);
+      if (e.key === 'ArrowRight') mostra(k + 1);
+    });
+    album.addEventListener('click', e => { if (e.target === palco) album.close(); });
+    let x0 = null;
+    palco.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
+    palco.addEventListener('touchend', e => {
+      if (x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 40) mostra(k + (dx < 0 ? 1 : -1));
+      x0 = null;
+    });
+  }
+
   /* ---------- Lenis depois do load (não disputa com a primeira pintura) ---------- */
   const depoisDoLoad = () => {
     medirRail(); pedir();
