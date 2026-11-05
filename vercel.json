@@ -1,6 +1,18 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/obras/ampliacoes",
+      "destination": "/#obras",
+      "permanent": true
+    },
+    {
+      "source": "/obras/lazer",
+      "destination": "/#obras",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/assets/fonts/(.*)",

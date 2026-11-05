@@ -83,8 +83,9 @@ CMP = [
      "Paredes em camadas, com isolamento térmico e acústico."),
 ]
 
-# (imagem base, alt, título, texto, fotos da página de obras, slug em /obras/<slug>). As três primeiras fotos e textos vieram do
-# cliente em 04/11; o resto ainda é foto de banco. Trocar os álbuns pelas obras reais quando chegarem.
+# (imagem base, alt, título, texto, fotos da página de obras, slug em /obras/<slug>). As fotos principais e os textos vieram do
+# cliente em 04/11; os álbuns ainda têm foto de banco. Trocar pelas obras reais quando chegarem.
+# Em 05/11 o cliente pediu para tirar "Ampliações e segundo andar" e "Espaços de lazer" (as URLs antigas redirecionam no vercel.json).
 RAIL = [
     ("obra-condominio", "Portaria de um condomínio residencial com paisagismo iluminado ao entardecer", "Empreendimentos imobiliários",
      "Realizamos empreendimentos imobiliários desenvolvidos com tecnologia Steel Frame.",
@@ -96,12 +97,6 @@ RAIL = [
      "Transformamos projetos comerciais em realidade através da tecnologia Steel Frame. Construímos lojas, escritórios, galpões e "
      "espaços corporativos com agilidade, precisão, eficiência e alto padrão de acabamento, oferecendo soluções modernas para empresas e investidores.",
      ["obra-comercial", "loja-fachada", "engenharia-cad", "obra-tesouras"], "comerciais"),
-    ("obra-tesouras", "Tesouras treliçadas de perfil de aço galvanizado parafusado", "Ampliações e segundo andar",
-     "Estrutura leve, que pesa pouco sobre o que já existe. Ideal para subir um andar ou fazer um anexo.",
-     ["obra-tesouras", "obra-paineis", "execucao-montagem"], "ampliacoes"),
-    ("casa-pedra-vidro", "Casa térrea de vidro e madeira entre paredes de pedra, acesa ao anoitecer", "Espaços de lazer",
-     "Área gourmet, edícula ou casa de campo, com a mesma precisão de uma obra grande.",
-     ["casa-pedra-vidro", "casa-entardecer-madeira"], "lazer"),
 ]
 # legenda de cada foto dentro do álbum
 ALT_ALBUM = {
